@@ -1,13 +1,34 @@
 # HerdAI
 
-**A production-grade AI agent framework for Go.**
-
 [![Go 1.24+](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests: 156 passing](https://img.shields.io/badge/Tests-156%20passing-brightgreen)]()
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-blue)]()
 
-HerdAI lets you build AI agents in Go that can use tools, call LLMs, work in teams, remember context, validate inputs/outputs, and retrieve knowledge from documents — all with zero external dependencies.
+## HerdAI — what it is
+
+**HerdAI** is a production-oriented AI agent framework for Go: you build agents that call LLMs, use tools, run in teams, and optionally use memory, RAG, guardrails, and human approval — with no extra runtime dependencies in the library itself.
+
+### Features
+
+- **Agents** — Role, goal, optional backstory; `Run` with timeouts, max tool calls, and structured logging.
+- **Tools** — First-class function calling: name, description, parameters, `Execute`; LLM decides when to invoke.
+- **Parallel tool execution** — Multiple tool calls from one LLM turn can run concurrently (configurable).
+- **Multi-agent managers** — Four strategies: sequential (pipeline), parallel (fan-out), round-robin (turn-taking), LLM router (supervisor picks the next agent). Managers are nestable (e.g. parallel team inside a sequential pipeline).
+- **Conversations** — Thread-safe transcript; pass `nil` if you do not need history.
+- **LLM providers** — OpenAI-compatible stack: OpenAI, Mistral, Groq, Ollama, etc.; per-agent LLM choice; `MockLLM` for tests without API keys.
+- **RAG** — Ingest from files, URLs, strings, directories; in-memory or pluggable stores; `SimpleRAG` (keyword) or hybrid/embeddings; optional citations, `MinScore`, query rewriting; documents can be added mid-session.
+- **Memory** — Multi-layer store (facts, episodes, instructions, summaries) with search, tags, TTL, scoping, import/export.
+- **Guardrails** — Chains on input and output (length, patterns, keywords, JSON shape, PII/injection filters, redaction, custom rules).
+- **Human-in-the-loop (HITL)** — Pause before tool execution: approve, reject, edit args, approve-all, or abort; policies (none / all / dangerous list / custom); CLI-style or channel-based handlers for UIs.
+- **Tracing** — Hierarchical spans (agent, LLM, tool, manager, MCP, memory, RAG, etc.) with stats and JSON export.
+- **Sessions** — Persist and resume conversations (e.g. file-backed store), checkpoints and lifecycle states.
+- **Eval harness** — Suites with multiple cases and built-in assertions (content, length, JSON, tools used, duration, custom), reports and baseline comparison.
+- **MCP** — Connect to Model Context Protocol servers so tools are discovered at runtime (multiple servers per agent).
+- **Tool cache (optional)** — Cache tool results with invalidation when context shifts.
+- **Tests & examples** — Broad test coverage and runnable examples (minimal, tools, supervisor, benchmarks, HITL channel, concurrent runs, RAG, etc.).
+
+### Install
 
 ```bash
 go get github.com/herdai-golang/herdai@latest
@@ -46,6 +67,7 @@ cd examples/rag_simple             && go run .
 
 ## Table of Contents
 
+- [HerdAI — what it is](#herdai--what-it-is)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
 - [Core Concepts](#core-concepts)
@@ -750,14 +772,14 @@ See [`benchmark/BENCHMARK.md`](benchmark/BENCHMARK.md) for detailed methodology,
 | **Cold start** | **< 10 ms** (compiled binary) | ~5–8 s | ~4–6 s | ~3–5 s |
 | **Memory (idle)** | **~20 MB** | ~220 MB | ~180 MB | ~150 MB |
 | **Binary size** | **~8 MB** | ~300 MB venv | ~250 MB venv | ~200 MB venv |
-| **Parallel agents (default)** | **✅** | ❌ sequential by default | ❌ must use `asyncio.gather` | ✅ via `Send()` fan-out |
-| **Parallel tools (default)** | **✅** | ❌ not supported within one agent | ❌ manual | ❌ manual |
-| **CPU-bound parallelism** | **✅** goroutines use all cores | ❌ GIL | ❌ GIL | ❌ GIL |
+| **Parallel agents (default)** | Yes | No (sequential by default) | No (must use asyncio.gather) | Yes (via Send fan-out) |
+| **Parallel tools (default)** | Yes | No (not supported within one agent) | No (manual) | No (manual) |
+| **CPU-bound parallelism** | Yes goroutines use all cores | No (GIL) | No (GIL) | No (GIL) |
 | **HITL** | **Approve/Reject/Edit/Abort** | No | Basic | No |
 | **Guardrails** | **10 built-in** | No | No | No |
 | **Eval harness** | **Built-in** (12 assertions) | No | No | No |
 | **Tool caching** | **Context-aware, field-aware** | No | No | No |
-| **MockLLM (no API key)** | **✅** | ❌ | ❌ | ❌ |
+| **MockLLM (no API key)** | Yes | No | No | No |
 | **Race-safe proof** | **`go test -race` (0 races)** | N/A | N/A | N/A |
 | **Sessions** | **Save/Resume** | No | No | Checkpoints |
 | **MCP** | **Built-in** | Plugin | Plugin | External |
@@ -766,19 +788,19 @@ See [`benchmark/BENCHMARK.md`](benchmark/BENCHMARK.md) for detailed methodology,
 
 | Feature | **HerdAI** | AgenticGoKit | Eino (ByteDance) | Google ADK Go | ZenModel | Agent-SDK-Go |
 |---|---|---|---|---|---|---|
-| **Zero external dependencies** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Parallel agents (default)** | **✅** | ✅ | ✅ | ✅ | ✅ | Configurable |
-| **Parallel tools (default)** | **✅** | Not documented | Not documented | Not documented | Not documented | Not documented |
-| **MockLLM — no API key needed** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **`go test -race` clean** | **✅ (156 tests)** | Not published | Not published | Not published | Not published | Not published |
-| **HITL (approve/reject/edit/abort)** | **✅** | ❌ | Partial (interrupt) | Partial (MCP confirmation) | ❌ | Partial |
-| **Built-in guardrails** | **✅** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Built-in eval / testing** | **✅** | ❌ | ❌ | ✅ (UI) | ❌ | ❌ |
-| **Tool result caching** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **MCP** | **✅** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **Tracing** | **✅** spans | ✅ OpenTelemetry | ✅ callbacks | ✅ OpenTelemetry | ❌ | ✅ |
-| **Sessions / persistence** | **✅** | Partial | ✅ | ✅ | ✅ SQLite | ✅ |
-| **Streaming** | Provider-dep. | **✅ streaming-first** | ✅ | ✅ | ✅ | ✅ |
+| **Zero external dependencies** | Yes | No | No | No | No | No |
+| **Parallel agents (default)** | Yes | Yes | Yes | Yes | Yes | Configurable |
+| **Parallel tools (default)** | Yes | Not documented | Not documented | Not documented | Not documented | Not documented |
+| **MockLLM — no API key needed** | Yes | No | No | No | No | No |
+| **`go test -race` clean** | **Yes (156 tests)** | Not published | Not published | Not published | Not published | Not published |
+| **HITL (approve/reject/edit/abort)** | Yes | No | Partial (interrupt) | Partial (MCP confirmation) | No | Partial |
+| **Built-in guardrails** | Yes | No | No | No | No | Yes |
+| **Built-in eval / testing** | Yes | No | No | Yes (UI) | No | No |
+| **Tool result caching** | Yes | No | No | No | No | No |
+| **MCP** | Yes | Yes | Yes | Yes | No | Yes |
+| **Tracing** | Yes spans | Yes (OpenTelemetry) | Yes (callbacks) | Yes (OpenTelemetry) | No | Yes |
+| **Sessions / persistence** | Yes | Partial | Yes | Yes | Yes (SQLite) | Yes |
+| **Streaming** | Provider-dep. | **Yes (streaming-first)** | Yes | Yes | Yes | Yes |
 | **LLM providers** | OpenAI-compatible | OpenAI, Anthropic, Ollama, Azure, HF | OpenAI, Claude, Gemini, Ollama | Gemini-first | Any (processors) | OpenAI, Anthropic, Vertex |
 | **Orchestration strategies** | Sequential, Parallel, RoundRobin, LLMRouter | Sequential, Parallel, DAG, Loop | Chain, Graph, Workflow | Modular hierarchy | Sequential, Parallel, Branching, Loop | Sequential, Parallel |
 | **Maturity** | Good | Beta (v0.5.6) | Production (ByteDance) | Production (Google) | Early (v0.1.0) | Good (v0.2.x) |
