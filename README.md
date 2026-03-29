@@ -66,9 +66,56 @@ cd examples/rag_simple             && go run . --demo
 
 ---
 
+## Performance at a glance
+
+> All five frameworks finish in the same wall-clock time on pure I/O workloads — that is **expected**.  
+> The differences that matter are startup cost, memory, dependency count, and CPU-bound work.
+
+### Python framework comparison
+
+Measured on Apple M3 Pro · 6 agents · 18 tools · 200 ms simulated LLM · 80 ms simulated tool latency.
+
+| Framework | par+par | par+seq | seq+par | seq+seq | speedup |
+|---|---|---|---|---|---|
+| **HerdAI (Go)** | **486 ms** | **728 ms** | **2 904 ms** | **3 875 ms** | **8×** |
+| LangGraph 1.1.x | 490 ms | 733 ms | 2 905 ms | 3 890 ms | 8× |
+| AutoGen 0.7.5 | 490 ms | 727 ms | 2 902 ms | 3 882 ms | 8× |
+| CrewAI 1.12.2 (sim) | 484 ms | 727 ms | 2 899 ms | 3 871 ms | 8× |
+| Pure Python asyncio | 484 ms | 727 ms | 2 899 ms | 3 871 ms | 8× |
+
+**par+par** = parallel agents + parallel tools. **par+seq** = parallel agents + sequential tools. **speedup** = seq+seq ÷ par+par.
+
+> **Why are times so similar?** All work is I/O-bound (`time.Sleep`). Both Go goroutines and Python asyncio yield during I/O, so all tasks make progress concurrently. The performance gap appears with **CPU-bound work** — tokenisation, embedding, JSON processing — where the Python GIL prevents simultaneous CPU use across threads, while Go goroutines use all available cores.
+
+### Where the real differences are
+
+| Dimension | HerdAI | LangGraph | AutoGen | CrewAI |
+|---|---|---|---|---|
+| Parallel by default | Yes (`StrategyParallel` is one flag) | Yes (with `Send` fan-out) | No (must use `asyncio.gather` manually) | No (`Process.sequential` is the default) |
+| Parallel tools by default | Yes (`ParallelToolCalls: true`) | No (manual in node) | No (manual) | No (not supported within one agent) |
+| Dependencies | **0** | 42 packages | 65 packages | 78 packages |
+| Cold start | **< 10 ms** (compiled binary) | 3–5 s (Python import) | 4–6 s | 5–8 s |
+| Memory (idle) | **~20 MB** | ~150 MB | ~180 MB | ~220 MB |
+| Binary size | **8 MB single file** | venv (~200 MB) | venv (~250 MB) | venv (~300 MB) |
+| CPU-bound parallelism | Yes (goroutines use all cores) | No (GIL) | No (GIL) | No (GIL) |
+| Race-safety proof | `go test -race` at build time | N/A (single-threaded asyncio) | N/A | N/A |
+| Code lines for this pipeline | **~60 lines** | ~120 lines | ~100 lines | ~90 lines |
+
+Run the full benchmark suite yourself:
+
+```bash
+cd benchmark && go run . --llm-delay 200ms --tool-delay 80ms
+cd benchmark && python python/compare_all.py
+```
+
+See [`benchmark/BENCHMARK.md`](benchmark/BENCHMARK.md) for methodology and Go framework comparisons.
+
+---
+
 ## Table of Contents
 
 - [HerdAI — what it is](#herdai--what-it-is)
+- [Performance at a glance](#performance-at-a-glance)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
 - [Core Concepts](#core-concepts)
