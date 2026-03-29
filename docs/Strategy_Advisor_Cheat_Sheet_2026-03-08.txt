@@ -1,0 +1,78 @@
+Strategy Advisor - 1-Page Cheat Sheet
+Date: 2026-03-08
+
+PROJECT SNAPSHOT
+- Built an AI Strategy Advisor on HerdAI (Go) with one CSO front-door experience
+- 5 core analysis tools: strategic, financial, competitor, GTM, consulting eval
+- Added memory, smart cache, MCP integrations, and session persistence
+- Goal: move from "framework demo" to "production-grade conversational advisor"
+
+TOP 5 WINS
+1) Architecture shift:
+   - Reduced ReAct-in-ReAct complexity in follow-ups
+   - Added router -> targeted tools -> single synthesis flow
+
+2) Smart cache with correctness:
+   - Field-aware invalidation tied to idea/customer/industry/etc.
+   - Selective rerun of only affected tools
+
+3) MCP performance improvements:
+   - Session-level MCP pooling and warmup
+   - Removed repeated initialize/tools-list handshake overhead
+
+4) Better response quality:
+   - Model split: stronger model for final synthesis, smaller model for routing/tool decisions
+   - Better follow-up behavior (short, focused answers)
+
+5) Memory reliability:
+   - Fixed async memory race by making extraction bounded + synchronous
+   - Follow-up turns now see fresher context
+
+TOP 5 MISTAKES
+1) Treated long responses as only a prompt issue (it was orchestration + context pollution)
+2) Repeated full analysis on follow-ups
+3) Initially relied on weak lexical cache invalidation
+4) Underestimated MCP query strategy effects (short indexed terms worked better)
+5) Let memory extraction run async, causing stale turn-to-turn state
+
+TOP 5 TRADE-OFFS (AND WHY)
+1) Depth vs speed:
+   - Full 5-tool run gives richer output but slower response
+   - Decision: full run first turn, selective rerun on follow-ups
+
+2) Quality vs cost:
+   - Strong model improves instruction-following but costs more
+   - Decision: stronger CSO synthesis model + smaller routing/tool model
+
+3) Cache hit rate vs correctness:
+   - Aggressive cache is fast but can be wrong after pivots
+   - Decision: field-aware invalidation + tool dependency mapping
+
+4) Simplicity vs observability:
+   - Fast iteration can hide bottlenecks
+   - Decision: keep code path simple first, then add focused metrics/logging
+
+5) Purity vs control:
+   - "One agent does all" is elegant but can be unstable
+   - Decision: CSO UX with controlled tool orchestration behind it
+
+TOP 5 APP-SPECIFIC LESSONS
+1) Structured intake form was foundational for both quality and cache logic
+2) Competitor quality depended as much on query shape as model capability
+3) Latency was mostly from extra LLM hops, not just tool call time
+4) Users trusted transparent source/uncertainty statements more than confident fluff
+5) Parallel tool execution helped, but selective execution helped more
+
+TOP 5 NEXT IMPROVEMENTS
+1) True SSE token streaming from Mistral end-to-end
+2) p50/p95 metrics per stage (route, tools, synth, total)
+3) Retry/fallback policy matrix per tool type
+4) Eval suite for follow-up precision and anti-hallucination
+5) Optional CPU/worker scaling path for heavy tool workloads
+
+INTERVIEW 30-SECOND PITCH
+"I built a Go-based strategy advisor and learned that production quality depends more on orchestration than prompt writing. I moved the app from nested ReAct loops to targeted tool routing with parallel execution and single-step synthesis. I implemented field-aware cache invalidation, session-level MCP pooling, and bounded memory updates to improve speed and correctness. The key trade-off was balancing analysis depth with conversational latency while preserving trust through transparent outputs."
+
+INTERVIEW 90-SECOND PITCH
+"The project started as a multi-agent strategy app but became a production-style conversational advisor. The big challenge was not model intelligence, it was orchestration under latency constraints. We saw repeated long answers, stale follow-up context, and avoidable MCP overhead. I fixed this by introducing model role-splitting, selective tool reruns with smart field-aware cache invalidation, and session-level MCP pooling so we stopped reconnecting every run. I also fixed memory freshness by replacing async extraction with bounded synchronous updates. Result: faster follow-ups, more accurate tool usage, better trust through transparent source-aware responses, and a cleaner architecture ready for scaling."
+

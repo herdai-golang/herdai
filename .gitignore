@@ -1,0 +1,18 @@
+# Binaries
+/benchmark/benchmark
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# OS / editor
+.DS_Store

@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HerdAI User Guide</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --bg: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #f1f5f9;
+    --table-stripe: #f8fafc;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 50px;
+}
+
+/* Cover */
+h1:first-of-type {
+    font-size: 28pt;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+}
+
+h1:first-of-type + p {
+    font-size: 13pt;
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 22pt;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-top: 40px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 16pt;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 32px;
+    margin-bottom: 12px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 13pt;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 24px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+p { margin-bottom: 12px; }
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+strong { font-weight: 600; }
+
+/* Code */
+code {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 9.5pt;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #be185d;
+}
+
+pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 12px 0 16px 0;
+    page-break-inside: avoid;
+    line-height: 1.5;
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: 9pt;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+}
+
+td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+tr:nth-child(even) { background: var(--table-stripe); }
+
+/* Lists */
+ul, ol {
+    margin: 8px 0 16px 24px;
+}
+
+li { margin-bottom: 4px; }
+
+/* Horizontal rule */
+hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+}
+
+/* Blockquote */
+blockquote {
+    border-left: 4px solid var(--primary);
+    background: #eff6ff;
+    padding: 12px 20px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Print styles */
+@media print {
+    body {
+        padding: 20px 30px;
+        font-size: 10pt;
+    }
+
+    h1 { page-break-before: always; }
+    h1:first-of-type { page-break-before: avoid; }
+
+    pre {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+        border: 1px solid #cbd5e1;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    pre code {
+        color: #1e293b !important;
+    }
+
+    th {
+        background: #1e293b !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    a { color: var(--primary) !important; }
+
+    .no-print { display: none; }
+}
+
+/* ASCII diagrams */
+pre:has(code) {
+    font-size: 9pt;
+}
+</style>
+</head>
+<body>
+    <div class="no-print" style="background:#eff6ff;padding:12px 20px;border-radius:8px;margin-bottom:24px;border:1px solid #bfdbfe;">
+        <strong>To save as PDF:</strong> Press <code>Cmd+P</code> (Mac) or <code>Ctrl+P</code> (Windows/Linux) → Destination: "Save as PDF" → Save
+    </div>
+    <h1 id="herdai-user-guide">HerdAI User Guide</h1>
+<p>A comprehensive guide to building AI agent systems with HerdAI — the most feature-complete AI agent framework for Go.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#project-structure">Project Structure</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#core-concepts">Core Concepts</a></li>
+<li><a href="#creating-agents">Creating Agents</a></li>
+<li><a href="#defining-tools">Defining Tools</a></li>
+<li><a href="#building-multi-agent-systems">Building Multi-Agent Systems</a></li>
+<li><a href="#orchestration-strategies">Orchestration Strategies</a></li>
+<li><a href="#hierarchical-teams">Hierarchical Teams</a></li>
+<li><a href="#llm-providers">LLM Providers</a></li>
+<li><a href="#rag">RAG (Retrieval-Augmented Generation)</a></li>
+<li><a href="#memory">Memory</a></li>
+<li><a href="#guardrails">Guardrails</a></li>
+<li><a href="#human-in-the-loop">Human-in-the-Loop</a></li>
+<li><a href="#tracing">Tracing</a></li>
+<li><a href="#sessions">Sessions (Persistence)</a></li>
+<li><a href="#eval--testing-harness">Eval / Testing Harness</a></li>
+<li><a href="#mcp-integration">MCP Integration</a></li>
+<li><a href="#conversation--context">Conversation &amp; Context</a></li>
+<li><a href="#error-handling--reliability">Error Handling &amp; Reliability</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#testing-with-mocks">Testing with Mocks</a></li>
+<li><a href="#examples-reference">Examples Reference</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#faq">FAQ</a></li>
+<li><a href="#comparison">Comparison</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>HerdAI is a production-grade AI agent framework written in Go. It lets you build autonomous AI agents that collaborate to solve complex tasks — with true concurrency, zero external dependencies, and clean abstractions.</p>
+<h3 id="key-design-principles">Key Design Principles</h3>
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Zero dependencies</strong></td>
+<td>Pure Go standard library — no external packages</td>
+</tr>
+<tr>
+<td><strong>No hanging</strong></td>
+<td>Every operation has a <code>context.Context</code> deadline</td>
+</tr>
+<tr>
+<td><strong>True concurrency</strong></td>
+<td>Goroutines for parallel agents</td>
+</tr>
+<tr>
+<td><strong>Clean abstractions</strong></td>
+<td>Agent, Tool, Manager, Conversation</td>
+</tr>
+<tr>
+<td><strong>LLM-agnostic</strong></td>
+<td>Pluggable LLM interface — OpenAI, Mistral, Groq, Ollama, or custom</td>
+</tr>
+<tr>
+<td><strong>MCP-native</strong></td>
+<td>First-class Model Context Protocol support</td>
+</tr>
+<tr>
+<td><strong>RAG built-in</strong></td>
+<td>Load docs from files, URLs, strings — no vector DB needed</td>
+</tr>
+<tr>
+<td><strong>Testable</strong></td>
+<td>MockLLM + MockMCPTransport for deterministic tests</td>
+</tr>
+<tr>
+<td><strong>Full observability</strong></td>
+<td>Memory, tracing, guardrails, HITL, sessions, eval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-you-can-build">What You Can Build</h3>
+<ul>
+<li>Strategic analysis pipelines (research → synthesize → recommend)</li>
+<li>RAG-powered documentation assistants</li>
+<li>Data processing workflows with external APIs</li>
+<li>Customer support with specialized agents and guardrails</li>
+<li>Content generation pipelines with human oversight</li>
+<li>Any task that benefits from multiple specialized AI agents</li>
+</ul>
+<h3 id="feature-summary">Feature Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Core</strong></td>
+<td>Agents, Tools, Managers, Conversations, per-agent LLM</td>
+</tr>
+<tr>
+<td><strong>Orchestration</strong></td>
+<td>Sequential, Parallel, RoundRobin, LLM Router</td>
+</tr>
+<tr>
+<td><strong>RAG</strong></td>
+<td>Files, URLs, strings, directories, dynamic uploads, keyword + vector search</td>
+</tr>
+<tr>
+<td><strong>Memory</strong></td>
+<td>Multi-layer (fact, episode, instruction, summary), TTL, tags, search</td>
+</tr>
+<tr>
+<td><strong>Guardrails</strong></td>
+<td>10 built-in (PII filter, injection blocker, RedactPII, JSON validation, etc.)</td>
+</tr>
+<tr>
+<td><strong>HITL</strong></td>
+<td>Approve/Reject/Edit/Abort, 4 policies, CLI + Channel handlers</td>
+</tr>
+<tr>
+<td><strong>Tracing</strong></td>
+<td>OTel-style hierarchical spans, 8 span kinds, stats, JSON export</td>
+</tr>
+<tr>
+<td><strong>Sessions</strong></td>
+<td>Save/resume, checkpoints, file + memory backends</td>
+</tr>
+<tr>
+<td><strong>Eval</strong></td>
+<td>12 assertions, regression tracking, tag-based filtering, report comparison</td>
+</tr>
+<tr>
+<td><strong>MCP</strong></td>
+<td>Auto-discovery, multi-server, manager propagation, mock transport</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="installation">Installation</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a new Go project</span>
+mkdir<span class="w"> </span>my-agents<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>my-agents
+go<span class="w"> </span>mod<span class="w"> </span>init<span class="w"> </span>my-agents
+
+<span class="c1"># Add HerdAI</span>
+go<span class="w"> </span>get<span class="w"> </span>github.com/herdai-golang/herdai
+</code></pre></div>
+
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>Go 1.24 or later</li>
+<li>An LLM API key (Mistral, OpenAI, Groq, etc.) — or use MockLLM for testing</li>
+</ul>
+<hr />
+<h2 id="project-structure">Project Structure</h2>
+<p>HerdAI separates the <strong>framework</strong> (the library you import) from the <strong>examples</strong> (programs that show how to use it).</p>
+<div class="codehilite"><pre><span></span><code><span class="n">herdai</span><span class="o">/</span>
+<span class="err">├──</span> <span class="o">*.</span><span class="n">go</span>                 <span class="err">←</span> <span class="n">The</span> <span class="n">framework</span><span class="o">.</span> <span class="n">You</span> <span class="kn">import</span><span class="w"> </span><span class="nn">this.</span>
+<span class="err">├──</span> <span class="o">*</span><span class="n">_test</span><span class="o">.</span><span class="n">go</span>            <span class="err">←</span> <span class="mi">156</span> <span class="n">unit</span><span class="o">/</span><span class="n">integration</span> <span class="n">tests</span>
+<span class="err">├──</span> <span class="n">go</span><span class="o">.</span><span class="n">mod</span>               <span class="err">←</span> <span class="n">Module</span><span class="p">:</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">herdai</span><span class="o">-</span><span class="n">golang</span><span class="o">/</span><span class="n">herdai</span>
+<span class="err">├──</span> <span class="n">LICENSE</span>
+<span class="err">├──</span> <span class="n">README</span><span class="o">.</span><span class="n">md</span>
+<span class="err">│</span>
+<span class="err">├──</span> <span class="n">docs</span><span class="o">/</span>                <span class="err">←</span> <span class="n">Documentation</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="n">user</span><span class="o">-</span><span class="n">guide</span><span class="o">.</span><span class="n">md</span>
+<span class="err">│</span>   <span class="err">└──</span> <span class="n">generate_pdf</span><span class="o">.</span><span class="n">py</span>
+<span class="err">│</span>
+<span class="err">└──</span> <span class="n">examples</span><span class="o">/</span>            <span class="err">←</span> <span class="n">Runnable</span> <span class="n">programs</span> <span class="n">that</span> <span class="n">use</span> <span class="n">the</span> <span class="n">framework</span>
+    <span class="err">├──</span> <span class="n">basic</span><span class="o">/</span>           <span class="err">←</span> <span class="n">Simplest</span><span class="p">:</span> <span class="n">one</span> <span class="n">agent</span><span class="p">,</span> <span class="n">one</span> <span class="n">question</span>
+    <span class="err">├──</span> <span class="n">single_agent</span><span class="o">/</span>    <span class="err">←</span> <span class="n">Agent</span> <span class="k">with</span> <span class="n">custom</span> <span class="n">tools</span>
+    <span class="err">├──</span> <span class="n">two_agent</span><span class="o">/</span>       <span class="err">←</span> <span class="n">Sequential</span> <span class="n">pipeline</span> <span class="p">(</span><span class="n">researcher</span> <span class="err">→</span> <span class="n">writer</span><span class="p">)</span>
+    <span class="err">├──</span> <span class="n">parallel_agents</span><span class="o">/</span> <span class="err">←</span> <span class="mi">6</span> <span class="n">agents</span> <span class="n">running</span> <span class="ow">in</span> <span class="n">parallel</span>
+    <span class="err">├──</span> <span class="n">llm_router</span><span class="o">/</span>      <span class="err">←</span> <span class="n">LLM</span> <span class="n">dynamically</span> <span class="n">picks</span> <span class="n">which</span> <span class="n">agent</span> <span class="n">runs</span>
+    <span class="err">├──</span> <span class="n">external_api</span><span class="o">/</span>    <span class="err">←</span> <span class="n">Agent</span> <span class="n">calling</span> <span class="n">HTTP</span> <span class="n">APIs</span> <span class="k">as</span> <span class="n">tools</span>
+    <span class="err">├──</span> <span class="n">mcp_agent</span><span class="o">/</span>       <span class="err">←</span> <span class="n">MCP</span> <span class="n">protocol</span> <span class="k">for</span> <span class="n">dynamic</span> <span class="n">tool</span> <span class="n">discovery</span>
+    <span class="err">├──</span> <span class="n">rag</span><span class="o">/</span>             <span class="err">←</span> <span class="n">RAG</span><span class="p">:</span> <span class="n">files</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">URLs</span><span class="p">,</span> <span class="n">dynamic</span> <span class="n">uploads</span>
+    <span class="err">├──</span> <span class="n">showcase</span><span class="o">/</span>        <span class="err">←</span> <span class="n">Multi</span><span class="o">-</span><span class="n">agent</span> <span class="n">pipeline</span> <span class="k">with</span> <span class="n">web</span> <span class="n">search</span>
+    <span class="err">├──</span> <span class="n">frameworks</span><span class="o">/</span>      <span class="err">←</span> <span class="mi">7</span> <span class="n">strategy</span> <span class="n">agents</span> <span class="o">+</span> <span class="n">synthesizer</span>
+    <span class="err">└──</span> <span class="n">webui</span><span class="o">/</span>           <span class="err">←</span> <span class="n">WhatsApp</span><span class="o">-</span><span class="n">style</span> <span class="n">chat</span> <span class="n">UI</span> <span class="k">with</span> <span class="n">WebSocket</span>
+</code></pre></div>
+
+<p><strong>To use the framework in your own project:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/herdai-golang/herdai&quot;</span>
+</code></pre></div>
+
+<p><strong>To run an example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>examples/basic
+go<span class="w"> </span>run<span class="w"> </span>main.go<span class="w"> </span>--demo
+</code></pre></div>
+
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="step-1-your-first-agent-no-api-key-needed">Step 1: Your First Agent (No API Key Needed)</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;context&quot;</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+
+<span class="w">    </span><span class="s">&quot;github.com/herdai-golang/herdai&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">mock</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MockLLM</span><span class="p">{}</span>
+<span class="w">    </span><span class="nx">mock</span><span class="p">.</span><span class="nx">PushResponse</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LLMResponse</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Go is great for concurrent backend services.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">})</span>
+
+<span class="w">    </span><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">ID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;assistant&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Helpful Assistant&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Answer questions clearly and concisely.&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">LLM</span><span class="p">:</span><span class="w">  </span><span class="nx">mock</span><span class="p">,</span>
+<span class="w">    </span><span class="p">})</span>
+
+<span class="w">    </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Background</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;Why should I use Go?&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Content</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="step-2-with-a-real-llm">Step 2: With a Real LLM</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">llm</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMistral</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">OpenAIConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mistral-small-latest&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;researcher&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Research Assistant&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Help users understand technical topics.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">  </span><span class="nx">llm</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Explain microservices vs monoliths&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Content</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Set your key first: <code>export MISTRAL_API_KEY=your-key-here</code></p>
+<h3 id="step-3-multi-agent-pipeline">Step 3: Multi-Agent Pipeline</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">researcher</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;researcher&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Researcher&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Find data&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">llm</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="nx">writer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;writer&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Writer&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Write clear reports&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">llm</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="nx">pipeline</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">       </span><span class="s">&quot;pipeline&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategySequential</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">researcher</span><span class="p">,</span><span class="w"> </span><span class="nx">writer</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">pipeline</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Write a report on the AI market&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="core-concepts">Core Concepts</h2>
+<p>HerdAI has five core building blocks:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">┌─────────┐</span><span class="w">     </span><span class="err">┌──────┐</span><span class="w">     </span><span class="err">┌─────────┐</span>
+<span class="err">│</span><span class="w">  </span><span class="n">Agent</span><span class="w">  </span><span class="err">│────▶│</span><span class="w"> </span><span class="n">Tool</span><span class="w"> </span><span class="err">│</span><span class="w">     </span><span class="err">│</span><span class="w">   </span><span class="n">MCP</span><span class="w">   </span><span class="err">│</span>
+<span class="err">└────┬────┘</span><span class="w">     </span><span class="err">└──────┘</span><span class="w">     </span><span class="err">└────┬────┘</span>
+<span class="w">     </span><span class="err">│</span><span class="w">                            </span><span class="err">│</span>
+<span class="w">     </span><span class="err">│</span><span class="w">  </span><span class="n">tools</span><span class="w"> </span><span class="n">auto</span><span class="o">-</span><span class="n">discovered</span><span class="w">     </span><span class="err">│</span>
+<span class="w">     </span><span class="err">◀────────────────────────────┘</span>
+<span class="w">     </span><span class="err">│</span>
+<span class="err">┌────▼────┐</span><span class="w">     </span><span class="err">┌──────────────┐</span>
+<span class="err">│</span><span class="w"> </span><span class="n">Manager</span><span class="w"> </span><span class="err">│────▶│</span><span class="w"> </span><span class="n">Conversation</span><span class="w"> </span><span class="err">│</span>
+<span class="err">└─────────┘</span><span class="w">     </span><span class="err">└──────────────┘</span>
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What It Is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent</strong></td>
+<td>An autonomous unit with a role, goal, tools, and an LLM</td>
+</tr>
+<tr>
+<td><strong>Tool</strong></td>
+<td>A function an agent can call (web search, API, database)</td>
+</tr>
+<tr>
+<td><strong>Manager</strong></td>
+<td>Orchestrates a group of agents with a strategy</td>
+</tr>
+<tr>
+<td><strong>Conversation</strong></td>
+<td>Thread-safe message history shared between agents</td>
+</tr>
+<tr>
+<td><strong>MCP</strong></td>
+<td>External tool server with auto-discovered tools via protocol</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-runnable-interface">The Runnable Interface</h3>
+<p>Both Agent and Manager implement <code>Runnable</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Runnable</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">GetID</span><span class="p">()</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">    </span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="w"> </span><span class="o">*</span><span class="nx">Conversation</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Result</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This enables <strong>hierarchical composition</strong>: anywhere you use an Agent, you can substitute a Manager (team of agents).</p>
+<h3 id="how-an-agent-runs-react-pattern">How an Agent Runs (ReAct Pattern)</h3>
+<p>HerdAI agents follow the <strong>ReAct</strong> (Reason → Act → Observe) pattern:</p>
+<ol>
+<li>Builds a <strong>system prompt</strong> from Role, Goal, and Backstory</li>
+<li>Injects <strong>memory</strong> context (if configured)</li>
+<li>Retrieves <strong>RAG</strong> chunks (if configured)</li>
+<li>Runs <strong>input guardrails</strong> (if configured)</li>
+<li>Adds <strong>conversation context</strong> and the current input</li>
+<li>Calls the <strong>LLM</strong></li>
+<li>If LLM requests <strong>tool calls</strong>:</li>
+<li>Checks <strong>HITL</strong> approval (if configured)</li>
+<li>Executes tools</li>
+<li>Feeds results back → calls LLM again (loop)</li>
+<li>When LLM returns a <strong>final message</strong> (no tool calls):</li>
+<li>Runs <strong>output guardrails</strong> (if configured)</li>
+<li>Stores result in <strong>memory</strong> (if configured)</li>
+<li>Records output in the <strong>Conversation</strong></li>
+<li>Returns <code>*Result</code></li>
+</ol>
+<p>All steps are <strong>traced</strong> if a Tracer is present in the context.</p>
+<hr />
+<h2 id="creating-agents">Creating Agents</h2>
+<h3 id="agentconfig-full-reference">AgentConfig — Full Reference</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Required</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;unique-id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Market Analyst&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyze market trends with data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">  </span><span class="nx">llm</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Optional — behavior</span>
+<span class="w">    </span><span class="nx">Backstory</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;15 years at McKinsey analyzing tech markets.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Tools</span><span class="p">:</span><span class="w">        </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Tool</span><span class="p">{</span><span class="nx">searchTool</span><span class="p">,</span><span class="w"> </span><span class="nx">calcTool</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">MaxToolCalls</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">               </span><span class="c1">// safety limit (default: 10)</span>
+<span class="w">    </span><span class="nx">Timeout</span><span class="p">:</span><span class="w">      </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">,</span><span class="w">  </span><span class="c1">// hard deadline (default: 2m)</span>
+<span class="w">    </span><span class="nx">Logger</span><span class="p">:</span><span class="w">       </span><span class="nx">slog</span><span class="p">.</span><span class="nx">Default</span><span class="p">(),</span>
+
+<span class="w">    </span><span class="c1">// Optional — MCP</span>
+<span class="w">    </span><span class="nx">MCPServers</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPServerConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;./search_server&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">DisableMCP</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Optional — advanced features</span>
+<span class="w">    </span><span class="nx">Memory</span><span class="p">:</span><span class="w">          </span><span class="nx">memoryStore</span><span class="p">,</span><span class="w">     </span><span class="c1">// multi-layer memory</span>
+<span class="w">    </span><span class="nx">RAG</span><span class="p">:</span><span class="w">             </span><span class="nx">ragConfig</span><span class="p">,</span><span class="w">       </span><span class="c1">// retrieval-augmented generation</span>
+<span class="w">    </span><span class="nx">InputGuardrails</span><span class="p">:</span><span class="w">  </span><span class="nx">inputChain</span><span class="p">,</span><span class="w">    </span><span class="c1">// validate before LLM</span>
+<span class="w">    </span><span class="nx">OutputGuardrails</span><span class="p">:</span><span class="w"> </span><span class="nx">outputChain</span><span class="p">,</span><span class="w">   </span><span class="c1">// validate before return</span>
+<span class="w">    </span><span class="nx">HITL</span><span class="p">:</span><span class="w">            </span><span class="o">&amp;</span><span class="nx">hitlConfig</span><span class="p">,</span><span class="w">     </span><span class="c1">// human approval for tools</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="crafting-good-agents">Crafting Good Agents</h3>
+<p><strong>Role</strong> — Tell the agent <em>what</em> it is:</p>
+<div class="codehilite"><pre><span></span><code>&quot;Senior Market Research Analyst&quot;
+&quot;Competitive Intelligence Specialist&quot;
+&quot;Full-Stack Software Engineer&quot;
+</code></pre></div>
+
+<p><strong>Goal</strong> — Tell the agent <em>what to achieve</em> (be specific):</p>
+<div class="codehilite"><pre><span></span><code>&quot;Research market size, growth rate, and key trends for the given industry.
+ Provide specific numbers. Use web_search for current data.&quot;
+</code></pre></div>
+
+<p><strong>Backstory</strong> — Give it <em>context</em> that shapes behavior:</p>
+<div class="codehilite"><pre><span></span><code>&quot;You have 15 years of experience at McKinsey analyzing tech markets.
+ You always quantify your findings and cite sources.&quot;
+</code></pre></div>
+
+<hr />
+<h2 id="defining-tools">Defining Tools</h2>
+<p>Tools give agents capabilities beyond text generation. When the LLM decides it needs data, it calls the tool through function calling.</p>
+<h3 id="basic-tool">Basic Tool</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">weatherTool</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Tool</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Name</span><span class="p">:</span><span class="w">        </span><span class="s">&quot;get_weather&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Get the current weather for a city&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Parameters</span><span class="p">:</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ToolParam</span><span class="p">{</span>
+<span class="w">        </span><span class="s">&quot;city&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nx">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;City name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Required</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">Execute</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">args</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">city</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">args</span><span class="p">[</span><span class="s">&quot;city&quot;</span><span class="p">].(</span><span class="kt">string</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;Weather in %s: 22°C, sunny&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">city</span><span class="p">),</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="http-api-tool">HTTP API Tool</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">marketAPI</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Tool</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Name</span><span class="p">:</span><span class="w">        </span><span class="s">&quot;get_market_data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Fetch market size and growth data for a specific industry&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Parameters</span><span class="p">:</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ToolParam</span><span class="p">{</span>
+<span class="w">        </span><span class="s">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nx">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Industry name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Required</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">},</span>
+<span class="w">        </span><span class="s">&quot;region&quot;</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="nx">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Geographic region&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">Execute</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">args</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">industry</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">args</span><span class="p">[</span><span class="s">&quot;industry&quot;</span><span class="p">].(</span><span class="kt">string</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;https://api.example.com/market?q=%s&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">industry</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+<span class="w">        </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">io</span><span class="p">.</span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">body</span><span class="p">),</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="tool-design-guidelines">Tool Design Guidelines</h3>
+<ol>
+<li><strong>Name</strong>: Short, snake_case (<code>web_search</code>, <code>get_market_data</code>)</li>
+<li><strong>Description</strong>: Tell the LLM <em>when</em> to use it — this is the most important field</li>
+<li><strong>Parameters</strong>: Include descriptions — the LLM uses them to fill in arguments</li>
+<li><strong>Execute</strong>: Return errors instead of panicking; return structured text the LLM can reason about</li>
+</ol>
+<hr />
+<h2 id="building-multi-agent-systems">Building Multi-Agent Systems</h2>
+<h3 id="managerconfig-reference">ManagerConfig Reference</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Required</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">       </span><span class="s">&quot;team-id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategyParallel</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">agent1</span><span class="p">,</span><span class="w"> </span><span class="nx">agent2</span><span class="p">},</span>
+
+<span class="w">    </span><span class="c1">// Optional</span>
+<span class="w">    </span><span class="nx">MaxTurns</span><span class="p">:</span><span class="w">   </span><span class="mi">20</span><span class="p">,</span><span class="w">               </span><span class="c1">// for RoundRobin/LLMRouter (default: 20)</span>
+<span class="w">    </span><span class="nx">Timeout</span><span class="p">:</span><span class="w">    </span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">,</span><span class="w"> </span><span class="c1">// hard deadline (default: 10m)</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">        </span><span class="nx">llm</span><span class="p">,</span><span class="w">              </span><span class="c1">// required only for LLMRouter</span>
+<span class="w">    </span><span class="nx">Logger</span><span class="p">:</span><span class="w">     </span><span class="nx">slog</span><span class="p">.</span><span class="nx">Default</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">MCPServers</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPServerConfig</span><span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="dynamic-agent-addition">Dynamic Agent Addition</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;team&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategySequential</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">agent1</span><span class="p">},</span>
+<span class="p">})</span>
+<span class="nx">mgr</span><span class="p">.</span><span class="nx">AddAgent</span><span class="p">(</span><span class="nx">agent2</span><span class="p">)</span>
+<span class="nx">mgr</span><span class="p">.</span><span class="nx">AddAgent</span><span class="p">(</span><span class="nx">agent3</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="orchestration-strategies">Orchestration Strategies</h2>
+<h3 id="sequential">Sequential</h3>
+<p>Agents run one after another. Each gets the previous agent's output as input.</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategySequential</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">researcher</span><span class="p">,</span><span class="w"> </span><span class="nx">writer</span><span class="p">,</span><span class="w"> </span><span class="nx">editor</span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p><strong>Best for</strong>: Pipelines, draft → edit → publish, research → synthesize.</p>
+<h3 id="parallel">Parallel</h3>
+<p>All agents run <strong>concurrently</strong> via goroutines. Results are merged. Resilient — if one agent fails, others continue.</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategyParallel</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">porter</span><span class="p">,</span><span class="w"> </span><span class="nx">swot</span><span class="p">,</span><span class="w"> </span><span class="nx">pestel</span><span class="p">,</span><span class="w"> </span><span class="nx">vrio</span><span class="p">,</span><span class="w"> </span><span class="nx">bmc</span><span class="p">,</span><span class="w"> </span><span class="nx">blueOcean</span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p><strong>Best for</strong>: Independent analyses, gathering data from multiple sources.</p>
+<h3 id="roundrobin">RoundRobin</h3>
+<p>Cycles through agents until MaxTurns or a <code>[DONE]</code>/<code>[FINISH]</code> signal.</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategyRoundRobin</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">proposer</span><span class="p">,</span><span class="w"> </span><span class="nx">critic</span><span class="p">,</span><span class="w"> </span><span class="nx">refiner</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">MaxTurns</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p><strong>Best for</strong>: Iterative refinement, debate, review cycles.</p>
+<h3 id="llmrouter">LLMRouter</h3>
+<p>An LLM dynamically decides which agent to call next or when to finish.</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategyLLMRouter</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">researcher</span><span class="p">,</span><span class="w"> </span><span class="nx">analyst</span><span class="p">,</span><span class="w"> </span><span class="nx">writer</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">      </span><span class="nx">llm</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">MaxTurns</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p><strong>Best for</strong>: Dynamic workflows where the next step depends on results.</p>
+<hr />
+<h2 id="hierarchical-teams">Hierarchical Teams</h2>
+<p>Because Manager implements <code>Runnable</code>, you can nest managers:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">researchTeam</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">       </span><span class="s">&quot;research-team&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategyParallel</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">marketAgent</span><span class="p">,</span><span class="w"> </span><span class="nx">techAgent</span><span class="p">,</span><span class="w"> </span><span class="nx">competitorAgent</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="nx">fullPipeline</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">       </span><span class="s">&quot;pipeline&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Strategy</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">StrategySequential</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w">   </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">researchTeam</span><span class="p">,</span><span class="w"> </span><span class="nx">synthesizerAgent</span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p>This creates:</p>
+<div class="codehilite"><pre><span></span><code>pipeline (Sequential)
+├── research-team (Parallel)
+│   ├── market-agent
+│   ├── tech-agent
+│   └── competitor-agent
+└── synthesizer-agent
+</code></pre></div>
+
+<hr />
+<h2 id="llm-providers">LLM Providers</h2>
+<p>HerdAI works with any OpenAI-compatible API. Each agent can use a different provider.</p>
+<h3 id="built-in-providers">Built-in Providers</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// OpenAI</span>
+<span class="nx">llm</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewOpenAI</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">OpenAIConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gpt-4o-mini&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// reads OPENAI_API_KEY from env</span>
+<span class="p">})</span>
+
+<span class="c1">// Mistral</span>
+<span class="nx">llm</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMistral</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">OpenAIConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mistral-small-latest&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// reads MISTRAL_API_KEY from env</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="any-openai-compatible-api">Any OpenAI-Compatible API</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Groq</span>
+<span class="nx">llm</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewOpenAI</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">OpenAIConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">BaseURL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://api.groq.com/openai/v1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w">  </span><span class="nx">os</span><span class="p">.</span><span class="nx">Getenv</span><span class="p">(</span><span class="s">&quot;GROQ_API_KEY&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;llama-3.1-70b-versatile&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1">// Ollama (local, no API key needed)</span>
+<span class="nx">llm</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewOpenAI</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">OpenAIConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">BaseURL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http://localhost:11434/v1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;llama3.1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;ollama&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="mock-llm-testing">Mock LLM (Testing)</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mock</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MockLLM</span><span class="p">{}</span>
+<span class="nx">mock</span><span class="p">.</span><span class="nx">PushResponse</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LLMResponse</span><span class="p">{</span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Hello!&quot;</span><span class="p">})</span>
+<span class="nx">mock</span><span class="p">.</span><span class="nx">PushResponse</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LLMResponse</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ToolCalls</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ToolCall</span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tc1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Function</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Args</span><span class="p">:</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;q&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">}},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+<span class="nx">mock</span><span class="p">.</span><span class="nx">PushResponse</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LLMResponse</span><span class="p">{</span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Final answer&quot;</span><span class="p">})</span>
+</code></pre></div>
+
+<h3 id="per-agent-providers">Per-Agent Providers</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">analyst</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">mistralLLM</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">})</span>
+<span class="nx">writer</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">openaiLLM</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">})</span>
+<span class="nx">reviewer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">ollamaLLM</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">})</span>
+</code></pre></div>
+
+<h3 id="custom-llm-provider">Custom LLM Provider</h3>
+<p>Implement the <code>LLM</code> interface to use any model:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">LLM</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Chat</span><span class="p">(</span><span class="nx">ctx</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span><span class="w"> </span><span class="nx">messages</span><span class="w"> </span><span class="p">[]</span><span class="nx">Message</span><span class="p">,</span><span class="w"> </span><span class="nx">tools</span><span class="w"> </span><span class="p">[]</span><span class="nx">Tool</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">LLMResponse</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="rag">RAG</h2>
+<p>RAG (Retrieval-Augmented Generation) lets agents answer questions grounded in your documents. HerdAI has a full RAG pipeline built in — no external vector database required.</p>
+<h3 id="how-it-works">How It Works</h3>
+<ol>
+<li><strong>Ingest</strong>: Load documents → split into chunks → store in vector store</li>
+<li><strong>Query</strong>: When agent receives a question, relevant chunks are retrieved</li>
+<li><strong>Generate</strong>: LLM answers using retrieved context as grounding</li>
+</ol>
+<h3 id="loading-documents">Loading Documents</h3>
+<h4 id="from-files">From Files</h4>
+<div class="codehilite"><pre><span></span><code><span class="nx">store</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewInMemoryVectorStore</span><span class="p">()</span>
+
+<span class="nx">loader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewTextLoader</span><span class="p">(</span><span class="s">&quot;docs/product-spec.md&quot;</span><span class="p">)</span>
+<span class="nx">pipeline</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewIngestionPipeline</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">IngestionConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Loader</span><span class="p">:</span><span class="w">   </span><span class="nx">loader</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Chunker</span><span class="p">:</span><span class="w">  </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">DefaultChunker</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">Embedder</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewNoOpEmbedder</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">Store</span><span class="p">:</span><span class="w">    </span><span class="nx">store</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="nx">stats</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">pipeline</span><span class="p">.</span><span class="nx">Ingest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Loaded %d docs → %d chunks\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">stats</span><span class="p">.</span><span class="nx">Documents</span><span class="p">,</span><span class="w"> </span><span class="nx">stats</span><span class="p">.</span><span class="nx">Chunks</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="from-a-directory">From a Directory</h4>
+<div class="codehilite"><pre><span></span><code><span class="nx">loader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewDirectoryLoader</span><span class="p">(</span><span class="s">&quot;docs/&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;.md&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.txt&quot;</span><span class="p">})</span>
+</code></pre></div>
+
+<h4 id="from-a-url">From a URL</h4>
+<div class="codehilite"><pre><span></span><code><span class="nx">urlLoader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewURLLoader</span><span class="p">(</span><span class="s">&quot;https://example.com/docs/api-reference&quot;</span><span class="p">)</span>
+<span class="nx">docs</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">urlLoader</span><span class="p">.</span><span class="nx">Load</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="nx">herdai</span><span class="p">.</span><span class="nx">IngestDocuments</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">DefaultChunker</span><span class="p">(),</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewNoOpEmbedder</span><span class="p">(),</span><span class="w"> </span><span class="nx">docs</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="from-multiple-urls">From Multiple URLs</h4>
+<div class="codehilite"><pre><span></span><code><span class="nx">loader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMultiURLLoader</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;https://example.com/docs/page1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://example.com/docs/page2&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://example.com/blog/article&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h4 id="from-strings-in-memory">From Strings (In-Memory)</h4>
+<div class="codehilite"><pre><span></span><code><span class="nx">loader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewStringsLoader</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;company-policy.md&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;All employees must...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;product-faq.md&quot;</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;Q: How does billing work?...&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="creating-the-rag-agent">Creating the RAG Agent</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;doc-assistant&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Documentation Assistant&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Answer questions using the knowledge base. Always cite sources.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">  </span><span class="nx">llm</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">RAG</span><span class="p">:</span><span class="w">  </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">SimpleRAG</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span><span class="w">  </span><span class="c1">// retrieve top 5 chunks per query</span>
+<span class="p">})</span>
+
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;How do I deploy the app?&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+</code></pre></div>
+
+<p><code>SimpleRAG</code> creates a keyword-based retriever — no embeddings API needed. For semantic search, use an embedder (see below).</p>
+<h3 id="adding-documents-mid-conversation">Adding Documents Mid-Conversation</h3>
+<p>Documents can be added at any time — no restart required:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">newDoc</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Document</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Version 3.0 adds streaming support...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Source</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;release-notes-v3.md&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="nx">herdai</span><span class="p">.</span><span class="nx">IngestDocuments</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">DefaultChunker</span><span class="p">(),</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewNoOpEmbedder</span><span class="p">(),</span><span class="w"> </span><span class="nx">newDoc</span><span class="p">)</span>
+
+<span class="c1">// The next query will search the new document too</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;What&#39;s new in v3?&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="rag-from-a-url-mid-conversation">RAG from a URL Mid-Conversation</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">urlLoader</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewURLLoader</span><span class="p">(</span><span class="s">&quot;https://example.com/blog/new-feature&quot;</span><span class="p">)</span>
+<span class="nx">docs</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">urlLoader</span><span class="p">.</span><span class="nx">Load</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="nx">herdai</span><span class="p">.</span><span class="nx">IngestDocuments</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">DefaultChunker</span><span class="p">(),</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewNoOpEmbedder</span><span class="p">(),</span><span class="w"> </span><span class="nx">docs</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="chunkers">Chunkers</h3>
+<table>
+<thead>
+<tr>
+<th>Chunker</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DefaultChunker()</code></td>
+<td>Sensible default (recursive, 500 chars, 50 overlap)</td>
+</tr>
+<tr>
+<td><code>NewFixedSizeChunker(size, overlap)</code></td>
+<td>Fixed character windows</td>
+</tr>
+<tr>
+<td><code>NewParagraphChunker()</code></td>
+<td>Split on paragraph boundaries</td>
+</tr>
+<tr>
+<td><code>NewMarkdownChunker()</code></td>
+<td>Split on Markdown headings</td>
+</tr>
+<tr>
+<td><code>NewRecursiveChunker(size, overlap)</code></td>
+<td>Try headings, then paragraphs, then sentences</td>
+</tr>
+</tbody>
+</table>
+<h3 id="embedders">Embedders</h3>
+<p>The default <code>NoOpEmbedder</code> uses keyword matching (no API needed). For semantic similarity, use an embedder:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Mistral embeddings</span>
+<span class="nx">embedder</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMistralEmbedder</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">EmbedderConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mistral-embed&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1">// OpenAI embeddings</span>
+<span class="nx">embedder</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewOpenAIEmbedder</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">EmbedderConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="retrievers">Retrievers</h3>
+<table>
+<thead>
+<tr>
+<th>Retriever</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NewKeywordRetriever(store)</code></td>
+<td>TF-IDF-style keyword matching</td>
+</tr>
+<tr>
+<td><code>NewVectorRetriever(store)</code></td>
+<td>Cosine similarity on embeddings</td>
+</tr>
+<tr>
+<td><code>NewHybridRetriever(store, alpha)</code></td>
+<td>Blend keyword + vector (alpha=0.7 means 70% vector)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="advanced-rag-configuration">Advanced RAG Configuration</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">RAG</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">RAGConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Retriever</span><span class="p">:</span><span class="w">   </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewHybridRetriever</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">TopK</span><span class="p">:</span><span class="w">        </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">MinScore</span><span class="p">:</span><span class="w">    </span><span class="mf">0.3</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">CiteSources</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">QueryRewriter</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">input</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;technical documentation: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">input</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<hr />
+<h2 id="memory">Memory</h2>
+<p>Multi-layer memory gives agents context from past interactions. Memories are automatically recalled before each LLM call based on relevance.</p>
+<h3 id="setup">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">memory</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewInMemoryStore</span><span class="p">()</span>
+
+<span class="nx">memory</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryEntry</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Kind</span><span class="p">:</span><span class="w">    </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryFact</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;The user prefers Go over Python&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Tags</span><span class="p">:</span><span class="w">    </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;preference&quot;</span><span class="p">},</span>
+<span class="p">})</span>
+<span class="nx">memory</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryEntry</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Kind</span><span class="p">:</span><span class="w">    </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryInstruction</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always format code examples with syntax highlighting&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">     </span><span class="s">&quot;assistant&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Role</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;Personal Assistant&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Goal</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;Help the user with context from past interactions&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">    </span><span class="nx">llm</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Memory</span><span class="p">:</span><span class="w"> </span><span class="nx">memory</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="memory-kinds">Memory Kinds</h3>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MemoryFact</code></td>
+<td>Things the agent should know</td>
+<td>"User is on the Pro plan"</td>
+</tr>
+<tr>
+<td><code>MemoryEpisode</code></td>
+<td>Past events</td>
+<td>"Analyzed competitor X on Jan 5"</td>
+</tr>
+<tr>
+<td><code>MemoryInstruction</code></td>
+<td>Standing orders</td>
+<td>"Always respond in bullet points"</td>
+</tr>
+<tr>
+<td><code>MemorySummary</code></td>
+<td>Compressed histories</td>
+<td>"Past 10 conversations focused on..."</td>
+</tr>
+</tbody>
+</table>
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>Keyword search</strong> with relevance scoring and priority boosting</li>
+<li><strong>Tag filtering</strong> — retrieve memories by tags</li>
+<li><strong>TTL expiration</strong> — memories can auto-expire</li>
+<li><strong>Session/agent scoping</strong> — isolate memories per session or agent</li>
+<li><strong>Export/Import</strong> — serialize to JSON for backup or transfer</li>
+</ul>
+<h3 id="searching-memory">Searching Memory</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">results</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">memory</span><span class="p">.</span><span class="nx">Search</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;deployment process&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">results</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[%s] %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">Kind</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">Content</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="ttl-and-scoping">TTL and Scoping</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">memory</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryEntry</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Kind</span><span class="p">:</span><span class="w">      </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MemoryFact</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Content</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;Temporary discount code: SAVE20&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">TTL</span><span class="p">:</span><span class="w">       </span><span class="mi">24</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Hour</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">SessionID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;session-123&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">AgentID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;sales-agent&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<hr />
+<h2 id="guardrails">Guardrails</h2>
+<p>Validate and transform inputs before the LLM sees them, and outputs before they reach the user.</p>
+<h3 id="setup_1">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;safe-agent&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Assistant&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Help safely&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">llm</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nx">InputGuardrails</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewGuardrailChain</span><span class="p">(</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ContentFilter</span><span class="p">(</span><span class="s">&quot;injection&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;pii&quot;</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MaxLength</span><span class="p">(</span><span class="mi">10000</span><span class="p">),</span>
+<span class="w">    </span><span class="p">),</span>
+
+<span class="w">    </span><span class="nx">OutputGuardrails</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewGuardrailChain</span><span class="p">(</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">RedactPII</span><span class="p">(),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MinLength</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">BlockKeywords</span><span class="p">(</span><span class="s">&quot;confidential&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;internal only&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="built-in-guardrails">Built-in Guardrails</h3>
+<table>
+<thead>
+<tr>
+<th>Guardrail</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MaxLength(n)</code></td>
+<td>Reject if input/output exceeds n characters</td>
+</tr>
+<tr>
+<td><code>MinLength(n)</code></td>
+<td>Reject if too short</td>
+</tr>
+<tr>
+<td><code>BlockPatterns(regex...)</code></td>
+<td>Block matching regex patterns</td>
+</tr>
+<tr>
+<td><code>RequirePatterns(regex...)</code></td>
+<td>Require matching patterns</td>
+</tr>
+<tr>
+<td><code>BlockKeywords(words...)</code></td>
+<td>Block specific words</td>
+</tr>
+<tr>
+<td><code>RequireJSON(fields...)</code></td>
+<td>Require valid JSON with specific fields</td>
+</tr>
+<tr>
+<td><code>ContentFilter(types...)</code></td>
+<td>Block PII, prompt injection</td>
+</tr>
+<tr>
+<td><code>RedactPII()</code></td>
+<td>Replace emails, phones, SSNs with <code>[REDACTED]</code></td>
+</tr>
+<tr>
+<td><code>TrimWhitespace()</code></td>
+<td>Clean up whitespace</td>
+</tr>
+<tr>
+<td><code>CustomGuardrail(fn)</code></td>
+<td>Your own validation function</td>
+</tr>
+</tbody>
+</table>
+<h3 id="custom-guardrail">Custom Guardrail</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">profanityFilter</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">CustomGuardrail</span><span class="p">(</span><span class="s">&quot;profanity-filter&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">func</span><span class="p">(</span><span class="nx">ctx</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">word</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">badWords</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">strings</span><span class="p">.</span><span class="nx">Contains</span><span class="p">(</span><span class="nx">strings</span><span class="p">.</span><span class="nx">ToLower</span><span class="p">(</span><span class="nx">input</span><span class="p">),</span><span class="w"> </span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;blocked: inappropriate language&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">input</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">OutputGuardrails</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewGuardrailChain</span><span class="p">(</span><span class="nx">profanityFilter</span><span class="p">),</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<hr />
+<h2 id="human-in-the-loop">Human-in-the-Loop</h2>
+<p>Pause agent execution for human approval before tool calls.</p>
+<h3 id="setup_2">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;careful-agent&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyst&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyze with oversight&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">llm</span><span class="p">,</span><span class="w"> </span><span class="nx">Tools</span><span class="p">:</span><span class="w"> </span><span class="nx">tools</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nx">HITL</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">HITLConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Policy</span><span class="p">:</span><span class="w">         </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">HITLPolicyDangerous</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">DangerousTools</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;delete_file&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;execute_command&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nx">Handler</span><span class="p">:</span><span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewCLIApprovalHandler</span><span class="p">(),</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="decisions">Decisions</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Approve</strong></td>
+<td>Execute the tool call as-is</td>
+</tr>
+<tr>
+<td><strong>Reject</strong></td>
+<td>Skip this tool call</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Modify the tool arguments before executing</td>
+</tr>
+<tr>
+<td><strong>ApproveAll</strong></td>
+<td>Auto-approve all future tool calls in this run</td>
+</tr>
+<tr>
+<td><strong>Abort</strong></td>
+<td>Stop the entire agent run</td>
+</tr>
+</tbody>
+</table>
+<h3 id="policies">Policies</h3>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>When It Asks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HITLPolicyNone</code></td>
+<td>Never (default)</td>
+</tr>
+<tr>
+<td><code>HITLPolicyAllTools</code></td>
+<td>Before every tool call</td>
+</tr>
+<tr>
+<td><code>HITLPolicyDangerous</code></td>
+<td>Only for tools in the dangerous list</td>
+</tr>
+<tr>
+<td><code>HITLPolicyCustom</code></td>
+<td>Your function decides</td>
+</tr>
+</tbody>
+</table>
+<h3 id="channel-handler-for-websocketui">Channel Handler (for WebSocket/UI)</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">handler</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewChannelHITLHandler</span><span class="p">()</span>
+
+<span class="c1">// In your WebSocket handler:</span>
+<span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">req</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&lt;-</span><span class="nx">handler</span><span class="p">.</span><span class="nx">Requests</span><span class="p">()</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Agent wants to call %s with %v\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">ToolName</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">Args</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">handler</span><span class="p">.</span><span class="nx">Respond</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">HITLResponse</span><span class="p">{</span><span class="nx">Decision</span><span class="p">:</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">HITLApprove</span><span class="p">})</span>
+<span class="p">}()</span>
+</code></pre></div>
+
+<h3 id="audit-trail">Audit Trail</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">hitl</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewHITLController</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+<span class="c1">// ... after agent runs ...</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">hitl</span><span class="p">.</span><span class="nx">History</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s: %s → %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">ToolName</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">Decision</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">Reason</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="tracing">Tracing</h2>
+<p>OpenTelemetry-style hierarchical tracing for every agent, tool, LLM call, RAG retrieval, and more.</p>
+<h3 id="setup_3">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">tracer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewTracer</span><span class="p">()</span>
+<span class="nx">ctx</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ContextWithTracer</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Background</span><span class="p">(),</span><span class="w"> </span><span class="nx">tracer</span><span class="p">)</span>
+
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">pipeline</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Analyze the market&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="summary">Summary</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">tracer</span><span class="p">.</span><span class="nx">Summary</span><span class="p">())</span>
+</code></pre></div>
+
+<p>Output:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">manager</span><span class="o">]</span><span class="w"> </span><span class="n">pipeline</span><span class="w"> </span><span class="p">(</span><span class="mf">2.3</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">agent</span><span class="o">]</span><span class="w"> </span><span class="n">researcher</span><span class="w"> </span><span class="p">(</span><span class="mf">1.1</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">    </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">memory</span><span class="o">]</span><span class="w"> </span><span class="n">recall</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">    </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">custom</span><span class="o">]</span><span class="w"> </span><span class="nl">rag</span><span class="p">:</span><span class="n">retrieve</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">    </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">llm</span><span class="o">]</span><span class="w"> </span><span class="n">chat</span><span class="w"> </span><span class="p">(</span><span class="mi">800</span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">    </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">tool</span><span class="o">]</span><span class="w"> </span><span class="n">web_search</span><span class="w"> </span><span class="p">(</span><span class="mi">300</span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">agent</span><span class="o">]</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="p">(</span><span class="mf">1.2</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+<span class="w">    </span><span class="err">✓</span><span class="w"> </span><span class="o">[</span><span class="n">llm</span><span class="o">]</span><span class="w"> </span><span class="n">chat</span><span class="w"> </span><span class="p">(</span><span class="mf">1.1</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">ok</span>
+</code></pre></div>
+
+<h3 id="stats">Stats</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">stats</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">tracer</span><span class="p">.</span><span class="nx">Stats</span><span class="p">()</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Total spans: %d\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">stats</span><span class="p">.</span><span class="nx">TotalSpans</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;LLM calls: %d\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">stats</span><span class="p">.</span><span class="nx">LLMCalls</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Tool calls: %d\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">stats</span><span class="p">.</span><span class="nx">ToolCalls</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="export">Export</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">data</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">tracer</span><span class="p">.</span><span class="nx">Export</span><span class="p">()</span><span class="w">  </span><span class="c1">// JSON string for analysis/dashboards</span>
+</code></pre></div>
+
+<h3 id="span-kinds">Span Kinds</h3>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>What It Traces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SpanKindAgent</code></td>
+<td>Agent execution</td>
+</tr>
+<tr>
+<td><code>SpanKindTool</code></td>
+<td>Tool call</td>
+</tr>
+<tr>
+<td><code>SpanKindLLM</code></td>
+<td>LLM API call</td>
+</tr>
+<tr>
+<td><code>SpanKindManager</code></td>
+<td>Manager orchestration</td>
+</tr>
+<tr>
+<td><code>SpanKindMCP</code></td>
+<td>MCP protocol operation</td>
+</tr>
+<tr>
+<td><code>SpanKindMemory</code></td>
+<td>Memory recall/store</td>
+</tr>
+<tr>
+<td><code>SpanKindSession</code></td>
+<td>Session operations</td>
+</tr>
+<tr>
+<td><code>SpanKindCustom</code></td>
+<td>RAG, guardrails, HITL, or your own</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sessions">Sessions</h2>
+<p>Save and resume agent conversations across restarts.</p>
+<h3 id="setup_4">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewFileSessionStore</span><span class="p">(</span><span class="s">&quot;./sessions&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="create-and-save">Create and Save</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">session</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewSession</span><span class="p">(</span><span class="s">&quot;market-analysis&quot;</span><span class="p">)</span>
+<span class="nx">conv</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">GetConversation</span><span class="p">()</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Analyze AI market&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+<span class="nx">session</span><span class="p">.</span><span class="nx">AddResult</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+<span class="nx">session</span><span class="p">.</span><span class="nx">SetCheckpoint</span><span class="p">(</span><span class="s">&quot;analyst&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;step&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;...&quot;</span><span class="p">})</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">Save</span><span class="p">(</span><span class="nx">session</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="resume-later">Resume Later</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">loaded</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">store</span><span class="p">.</span><span class="nx">Load</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+<span class="nx">loaded</span><span class="p">.</span><span class="nx">Resume</span><span class="p">()</span>
+<span class="nx">conv</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">loaded</span><span class="p">.</span><span class="nx">GetConversation</span><span class="p">()</span><span class="w">  </span><span class="c1">// full history is restored</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Now analyze competitors&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="lifecycle-states">Lifecycle States</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active</code></td>
+<td>Currently running</td>
+</tr>
+<tr>
+<td><code>paused</code></td>
+<td>Saved for later</td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td>Finished successfully</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>Terminated with error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="session-stores">Session Stores</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// File-based (JSON files on disk)</span>
+<span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewFileSessionStore</span><span class="p">(</span><span class="s">&quot;./sessions&quot;</span><span class="p">)</span>
+
+<span class="c1">// In-memory (for testing)</span>
+<span class="nx">store</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewInMemorySessionStore</span><span class="p">()</span>
+</code></pre></div>
+
+<hr />
+<h2 id="eval-testing-harness">Eval / Testing Harness</h2>
+<p>Built-in evaluation framework for testing agent quality and tracking regressions.</p>
+<h3 id="setup_5">Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">suite</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewEvalSuite</span><span class="p">(</span><span class="s">&quot;quality-tests&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">agent</span><span class="p">)</span>
+
+<span class="nx">suite</span><span class="p">.</span><span class="nx">AddCase</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">EvalCase</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Name</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;Answers about Go&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Input</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;What is Go good for?&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Tags</span><span class="p">:</span><span class="w">  </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;basic&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">Assertions</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Assertion</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AssertContains</span><span class="p">(</span><span class="s">&quot;concurrent&quot;</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AssertMinLength</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AssertMaxDuration</span><span class="p">(</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">),</span>
+<span class="w">        </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AssertMaxToolCalls</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="nx">report</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">suite</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">report</span><span class="p">.</span><span class="nx">Summary</span><span class="p">())</span>
+</code></pre></div>
+
+<p>Output:</p>
+<div class="codehilite"><pre><span></span><code>╔══════════════════════════════════════════════════════╗
+║  EVAL REPORT: quality-tests                         ║
+║  Total: 5   Passed: 4   Failed: 1                   ║
+║  Pass Rate: 80.0%    Duration: 3.2s                  ║
+╚══════════════════════════════════════════════════════╝
+</code></pre></div>
+
+<h3 id="built-in-assertions">Built-in Assertions</h3>
+<table>
+<thead>
+<tr>
+<th>Assertion</th>
+<th>What It Checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AssertContains(text)</code></td>
+<td>Output contains the text</td>
+</tr>
+<tr>
+<td><code>AssertNotContains(text)</code></td>
+<td>Output does not contain the text</td>
+</tr>
+<tr>
+<td><code>AssertMinLength(n)</code></td>
+<td>Output is at least n characters</td>
+</tr>
+<tr>
+<td><code>AssertMaxLength(n)</code></td>
+<td>Output is at most n characters</td>
+</tr>
+<tr>
+<td><code>AssertJSON(fields...)</code></td>
+<td>Output is valid JSON with specific fields</td>
+</tr>
+<tr>
+<td><code>AssertToolUsed(name)</code></td>
+<td>A specific tool was called</td>
+</tr>
+<tr>
+<td><code>AssertToolNotUsed(name)</code></td>
+<td>A specific tool was not called</td>
+</tr>
+<tr>
+<td><code>AssertMaxToolCalls(n)</code></td>
+<td>No more than n tool calls were made</td>
+</tr>
+<tr>
+<td><code>AssertMaxDuration(d)</code></td>
+<td>Completed within duration d</td>
+</tr>
+<tr>
+<td><code>AssertCustom(name, fn)</code></td>
+<td>Your own assertion function</td>
+</tr>
+</tbody>
+</table>
+<h3 id="regression-tracking">Regression Tracking</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Save baseline</span>
+<span class="nx">report</span><span class="p">.</span><span class="nx">ExportJSON</span><span class="p">(</span><span class="s">&quot;results/v1.json&quot;</span><span class="p">)</span>
+
+<span class="c1">// Later: compare against baseline</span>
+<span class="nx">baseline</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LoadReport</span><span class="p">(</span><span class="s">&quot;results/v1.json&quot;</span><span class="p">)</span>
+<span class="nx">current</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">suite</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">CompareReports</span><span class="p">(</span><span class="nx">baseline</span><span class="p">,</span><span class="w"> </span><span class="nx">current</span><span class="p">))</span>
+</code></pre></div>
+
+<h3 id="run-by-tag">Run by Tag</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Only run cases tagged &quot;critical&quot;</span>
+<span class="nx">report</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">suite</span><span class="p">.</span><span class="nx">RunByTag</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;critical&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="mcp-integration">MCP Integration</h2>
+<p>MCP (Model Context Protocol) lets agents connect to external tool servers. Tools are auto-discovered — you don't define them manually.</p>
+<h3 id="connect-an-agent-to-mcp">Connect an Agent to MCP</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ID</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;researcher&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Researcher&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">LLM</span><span class="p">:</span><span class="w">  </span><span class="nx">llm</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">MCPServers</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPServerConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">Name</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;web-search&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;npx&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">Args</span><span class="p">:</span><span class="w">    </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;@anthropic/mcp-server-web-search&quot;</span><span class="p">},</span>
+<span class="w">            </span><span class="nx">Env</span><span class="p">:</span><span class="w">     </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;API_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">Getenv</span><span class="p">(</span><span class="s">&quot;SEARCH_KEY&quot;</span><span class="p">)},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+<span class="k">defer</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="multiple-mcp-servers">Multiple MCP Servers</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">MCPServers</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPServerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;filesystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;npx&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Args</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/data&quot;</span><span class="p">}},</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;database&quot;</span><span class="p">,</span><span class="w">   </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;db-mcp-server&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;web-search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;search-server&quot;</span><span class="p">},</span>
+<span class="p">},</span>
+</code></pre></div>
+
+<h3 id="manager-level-mcp-shared">Manager-Level MCP (Shared)</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Agents</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">Runnable</span><span class="p">{</span><span class="nx">agent1</span><span class="p">,</span><span class="w"> </span><span class="nx">agent2</span><span class="p">,</span><span class="w"> </span><span class="nx">agent3</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">MCPServers</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPServerConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;shared-search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;search-server&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">})</span>
+<span class="c1">// All agents get &quot;shared-search&quot; tools automatically</span>
+</code></pre></div>
+
+<h3 id="opt-out-of-mcp">Opt Out of MCP</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">DisableMCP</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<h3 id="testing-with-mock-mcp">Testing with Mock MCP</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mock</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMockMCPTransport</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPToolDef</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mcp_search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Search&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">InputSchema</span><span class="p">:</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;object&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nx">Handler</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">args</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;result&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">)</span>
+<span class="nx">agent</span><span class="p">.</span><span class="nx">ConnectMCPWithTransport</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test-server&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">mock</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="conversation-context">Conversation &amp; Context</h2>
+<h3 id="creating-a-conversation">Creating a Conversation</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">conv</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewConversation</span><span class="p">()</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">mgr</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">conv</span><span class="p">)</span>
+
+<span class="c1">// Inspect the transcript</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">conv</span><span class="p">.</span><span class="nx">GetTurns</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[%s] %s: %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="p">.</span><span class="nx">AgentID</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="p">.</span><span class="nx">Role</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="p">.</span><span class="nx">Content</span><span class="p">[:</span><span class="mi">80</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="thread-safety">Thread Safety</h3>
+<p>All Conversation methods are safe for concurrent use — critical for <code>StrategyParallel</code> where multiple agents write simultaneously.</p>
+<h3 id="nil-conversation">Nil Conversation</h3>
+<p>Passing <code>nil</code> is allowed — the agent creates an internal conversation. Use when you don't need the transcript.</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Quick question&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="error-handling-reliability">Error Handling &amp; Reliability</h2>
+<h3 id="no-hanging-guaranteed">No Hanging — Guaranteed</h3>
+<p>Every operation has a <code>context.Context</code> with a deadline:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Agent level: 2-minute timeout (default)</span>
+<span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">Timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">})</span>
+
+<span class="c1">// Manager level: 10-minute timeout (default)</span>
+<span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span><span class="nx">Timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">})</span>
+
+<span class="c1">// Call level: custom timeout</span>
+<span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">cancel</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">WithTimeout</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="k">defer</span><span class="w"> </span><span class="nx">cancel</span><span class="p">()</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;query&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="max-tool-calls">Max Tool Calls</h3>
+<p>Prevents runaway tool loops:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">MaxToolCalls</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">})</span>
+</code></pre></div>
+
+<h3 id="max-turns-manager">Max Turns (Manager)</h3>
+<p>Prevents infinite loops in RoundRobin/LLMRouter:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mgr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewManager</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">ManagerConfig</span><span class="p">{</span><span class="nx">MaxTurns</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">})</span>
+</code></pre></div>
+
+<h3 id="context-cancellation">Context Cancellation</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">cancel</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">WithCancel</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">cancel</span><span class="p">()</span><span class="w">  </span><span class="c1">// stops all agents immediately</span>
+<span class="p">}()</span>
+<span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">mgr</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;long task&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="logging">Logging</h2>
+<p>HerdAI uses Go's structured logging (<code>log/slog</code>).</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">logger</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">slog</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">slog</span><span class="p">.</span><span class="nx">NewJSONHandler</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">slog</span><span class="p">.</span><span class="nx">HandlerOptions</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Level</span><span class="p">:</span><span class="w"> </span><span class="nx">slog</span><span class="p">.</span><span class="nx">LevelDebug</span><span class="p">,</span>
+<span class="p">}))</span>
+
+<span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span><span class="nx">Logger</span><span class="p">:</span><span class="w"> </span><span class="nx">logger</span><span class="p">})</span>
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Level</th>
+<th>Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent started</td>
+<td>INFO</td>
+<td>agent_id, input_length, tool_count</td>
+</tr>
+<tr>
+<td>Tool executed</td>
+<td>INFO</td>
+<td>agent_id, tool, duration, output_length</td>
+</tr>
+<tr>
+<td>Agent completed</td>
+<td>INFO</td>
+<td>agent_id, duration, tool_calls, response_length</td>
+</tr>
+<tr>
+<td>Manager started</td>
+<td>INFO</td>
+<td>manager_id, strategy, agent_count</td>
+</tr>
+<tr>
+<td>MCP connected</td>
+<td>INFO</td>
+<td>mcp_server, tools_discovered</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="testing-with-mocks">Testing with Mocks</h2>
+<h3 id="mockllm">MockLLM</h3>
+<div class="codehilite"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TestMyAgent</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">mock</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MockLLM</span><span class="p">{}</span>
+<span class="w">    </span><span class="nx">mock</span><span class="p">.</span><span class="nx">PushResponse</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">LLMResponse</span><span class="p">{</span><span class="nx">Content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Market size: $10B&quot;</span><span class="p">})</span>
+
+<span class="w">    </span><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="nx">herdai</span><span class="p">.</span><span class="nx">AgentConfig</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">ID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyst&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Goal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyze&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">LLM</span><span class="p">:</span><span class="w"> </span><span class="nx">mock</span><span class="p">,</span>
+<span class="w">    </span><span class="p">})</span>
+
+<span class="w">    </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Background</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;Analyze AI market&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">t</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">strings</span><span class="p">.</span><span class="nx">Contains</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$10B&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">t</span><span class="p">.</span><span class="nx">Error</span><span class="p">(</span><span class="s">&quot;expected market size in result&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="mockmcptransport">MockMCPTransport</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">mock</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">NewMockMCPTransport</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">herdai</span><span class="p">.</span><span class="nx">MCPToolDef</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;search&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Search the web&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">InputSchema</span><span class="p">:</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;object&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nx">Handler</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">args</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;results&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">)</span>
+<span class="nx">agent</span><span class="p">.</span><span class="nx">ConnectMCPWithTransport</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">mock</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="running-tests">Running Tests</h3>
+<div class="codehilite"><pre><span></span><code>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./...<span class="w">           </span><span class="c1"># all 156 tests</span>
+go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-v<span class="w"> </span>./...<span class="w">        </span><span class="c1"># verbose</span>
+go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-race<span class="w"> </span>./...<span class="w">     </span><span class="c1"># with race detector</span>
+go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-run<span class="w"> </span>TestRAG<span class="w">    </span><span class="c1"># specific test</span>
+</code></pre></div>
+
+<hr />
+<h2 id="examples-reference">Examples Reference</h2>
+<p>Every example is a standalone Go program in <code>examples/</code>. Each has its own <code>go.mod</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>What It Shows</th>
+<th>API Key Needed?</th>
+<th>How to Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basic</code></td>
+<td>One agent, one question</td>
+<td>No (<code>--demo</code>)</td>
+<td><code>cd examples/basic &amp;&amp; go run main.go --demo</code></td>
+</tr>
+<tr>
+<td><code>single_agent</code></td>
+<td>Agent with a custom tool</td>
+<td>No (MockLLM)</td>
+<td><code>cd examples/single_agent &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>two_agent</code></td>
+<td>Sequential pipeline: researcher → writer</td>
+<td>No (MockLLM)</td>
+<td><code>cd examples/two_agent &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>parallel_agents</code></td>
+<td>6 strategy agents in parallel</td>
+<td>No (MockLLM)</td>
+<td><code>cd examples/parallel_agents &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>llm_router</code></td>
+<td>LLM dynamically picks agents</td>
+<td>No (MockLLM)</td>
+<td><code>cd examples/llm_router &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>external_api</code></td>
+<td>Agent calling HTTP APIs as tools</td>
+<td>No (MockLLM)</td>
+<td><code>cd examples/external_api &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>mcp_agent</code></td>
+<td>MCP: 4 integration patterns</td>
+<td>No (MockMCP)</td>
+<td><code>cd examples/mcp_agent &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>rag</code></td>
+<td>RAG: files, URLs, dynamic uploads</td>
+<td>No (<code>--demo</code>)</td>
+<td><code>cd examples/rag &amp;&amp; go run main.go --demo</code></td>
+</tr>
+<tr>
+<td><code>showcase</code></td>
+<td>Multi-agent + MCP web search</td>
+<td>Yes (Mistral)</td>
+<td><code>cd examples/showcase &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>frameworks</code></td>
+<td>7 strategy frameworks + synthesizer</td>
+<td>Yes (Mistral)</td>
+<td><code>cd examples/frameworks &amp;&amp; go run main.go</code></td>
+</tr>
+<tr>
+<td><code>webui</code></td>
+<td>WhatsApp-style chat with HITL</td>
+<td>Yes (Mistral)</td>
+<td><code>cd examples/webui &amp;&amp; go run main.go</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="api-reference">API Reference</h2>
+<h3 id="core-types">Core Types</h3>
+<div class="codehilite"><pre><span></span><code>AgentConfig{ID, Role, Goal, Backstory, Tools, LLM, MaxToolCalls, Timeout,
+            Logger, MCPServers, DisableMCP, Memory, HITL,
+            InputGuardrails, OutputGuardrails, RAG}
+
+NewAgent(config) → *Agent
+agent.Run(ctx, input, conv) → (*Result, error)
+agent.GetID() → string
+agent.Close() → error
+
+ManagerConfig{ID, Strategy, Agents, MaxTurns, Timeout, LLM, Logger, MCPServers}
+NewManager(config) → *Manager
+manager.Run(ctx, input, conv) → (*Result, error)
+manager.AddAgent(agent)
+manager.Close() → error
+
+Result{AgentID, Content, Metadata}
+</code></pre></div>
+
+<h3 id="strategies">Strategies</h3>
+<div class="codehilite"><pre><span></span><code>StrategySequential    — one after another
+StrategyParallel      — all at once
+StrategyRoundRobin    — take turns
+StrategyLLMRouter     — LLM decides
+</code></pre></div>
+
+<h3 id="rag_1">RAG</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">NewInMemoryVectorStore</span><span class="p">()</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">InMemoryVectorStore</span>
+<span class="nx">NewTextLoader</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">TextLoader</span>
+<span class="nx">NewDirectoryLoader</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span><span class="w"> </span><span class="nx">exts</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">DirectoryLoader</span>
+<span class="nx">NewStringsLoader</span><span class="p">(</span><span class="nx">map</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">StringsLoader</span>
+<span class="nx">NewURLLoader</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">URLLoader</span>
+<span class="nx">NewMultiURLLoader</span><span class="p">(</span><span class="nx">urls</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">multiURLLoader</span>
+<span class="nx">NewIngestionPipeline</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">IngestionPipeline</span>
+<span class="nx">IngestDocuments</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">chunker</span><span class="p">,</span><span class="w"> </span><span class="nx">embedder</span><span class="p">,</span><span class="w"> </span><span class="nx">docs</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="p">(</span><span class="nx">stats</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">)</span>
+<span class="nx">SimpleRAG</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">topK</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">RAGConfig</span>
+<span class="nx">DefaultChunker</span><span class="p">()</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">Chunker</span>
+
+<span class="nx">NewFixedSizeChunker</span><span class="p">(</span><span class="nx">size</span><span class="p">,</span><span class="w"> </span><span class="nx">overlap</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">FixedSizeChunker</span>
+<span class="nx">NewParagraphChunker</span><span class="p">()</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">ParagraphChunker</span>
+<span class="nx">NewMarkdownChunker</span><span class="p">()</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">MarkdownChunker</span>
+<span class="nx">NewRecursiveChunker</span><span class="p">(</span><span class="nx">size</span><span class="p">,</span><span class="w"> </span><span class="nx">overlap</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">RecursiveChunker</span>
+
+<span class="nx">NewNoOpEmbedder</span><span class="p">()</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">NoOpEmbedder</span>
+<span class="nx">NewOpenAIEmbedder</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">OpenAIEmbedder</span>
+<span class="nx">NewMistralEmbedder</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">MistralEmbedder</span>
+
+<span class="nx">NewKeywordRetriever</span><span class="p">(</span><span class="nx">store</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">KeywordRetriever</span>
+<span class="nx">NewVectorRetriever</span><span class="p">(</span><span class="nx">store</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">VectorRetriever</span>
+<span class="nx">NewHybridRetriever</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span><span class="w"> </span><span class="nx">alpha</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">HybridRetriever</span>
+</code></pre></div>
+
+<h3 id="memory_1">Memory</h3>
+<div class="codehilite"><pre><span></span><code>NewInMemoryStore() → *InMemoryStore
+MemoryEntry{Kind, Content, Tags, TTL, SessionID, AgentID, Priority}
+MemoryFact, MemoryEpisode, MemoryInstruction, MemorySummary
+store.Store(ctx, entry) → error
+store.Search(ctx, query, limit) → ([]MemoryEntry, error)
+store.Export() → ([]byte, error)
+store.Import(data) → error
+</code></pre></div>
+
+<h3 id="guardrails_1">Guardrails</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">NewGuardrailChain</span><span class="p">(</span><span class="nx">guardrails</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">*</span><span class="nx">GuardrailChain</span>
+<span class="nx">chain</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">input</span><span class="p">)</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">)</span>
+
+<span class="nx">MaxLength</span><span class="p">(</span><span class="nx">n</span><span class="p">),</span><span class="w"> </span><span class="nx">MinLength</span><span class="p">(</span><span class="nx">n</span><span class="p">),</span><span class="w"> </span><span class="nx">BlockPatterns</span><span class="p">(</span><span class="nx">regex</span><span class="o">...</span><span class="p">),</span>
+<span class="nx">RequirePatterns</span><span class="p">(</span><span class="nx">regex</span><span class="o">...</span><span class="p">),</span><span class="w"> </span><span class="nx">BlockKeywords</span><span class="p">(</span><span class="nx">words</span><span class="o">...</span><span class="p">),</span>
+<span class="nx">RequireJSON</span><span class="p">(</span><span class="nx">fields</span><span class="o">...</span><span class="p">),</span><span class="w"> </span><span class="nx">ContentFilter</span><span class="p">(</span><span class="nx">types</span><span class="o">...</span><span class="p">),</span>
+<span class="nx">RedactPII</span><span class="p">(),</span><span class="w"> </span><span class="nx">TrimWhitespace</span><span class="p">(),</span><span class="w"> </span><span class="nx">CustomGuardrail</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="kd">fn</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="hitl">HITL</h3>
+<div class="codehilite"><pre><span></span><code>HITLConfig{Policy, DangerousTools, Handler, CustomPolicy}
+NewHITLController(config) → *HITLController
+NewCLIApprovalHandler() → *CLIApprovalHandler
+NewChannelHITLHandler() → *ChannelHITLHandler
+AutoApproveHandler{}
+
+HITLApprove, HITLReject, HITLEdit, HITLApproveAll, HITLAbort
+HITLPolicyNone, HITLPolicyAllTools, HITLPolicyDangerous, HITLPolicyCustom
+</code></pre></div>
+
+<h3 id="tracing_1">Tracing</h3>
+<div class="codehilite"><pre><span></span><code>NewTracer() → *Tracer
+ContextWithTracer(ctx, tracer) → context.Context
+StartSpanFromContext(ctx, name, kind) → (*Span, context.Context)
+tracer.Summary() → string
+tracer.Stats() → TraceStats
+tracer.Export() → string
+tracer.Spans() → []*Span
+
+SpanKindAgent, SpanKindTool, SpanKindLLM, SpanKindManager,
+SpanKindMCP, SpanKindMemory, SpanKindSession, SpanKindCustom
+</code></pre></div>
+
+<h3 id="sessions_1">Sessions</h3>
+<div class="codehilite"><pre><span></span><code>NewSession(name) → *Session
+session.GetConversation() → *Conversation
+session.AddResult(result)
+session.SetCheckpoint(key, data)
+session.GetCheckpoint(key) → (data, bool)
+session.Resume(), session.Pause(), session.Complete(), session.Fail(err)
+
+NewFileSessionStore(dir) → (*FileSessionStore, error)
+NewInMemorySessionStore() → *InMemorySessionStore
+store.Save(session) → error
+store.Load(id) → (*Session, error)
+store.List() → ([]string, error)
+store.Delete(id) → error
+</code></pre></div>
+
+<h3 id="eval">Eval</h3>
+<div class="codehilite"><pre><span></span><code>NewEvalSuite(name, agent) → *EvalSuite
+suite.AddCase(case)
+suite.Run(ctx) → *EvalReport
+suite.RunByTag(ctx, tag) → *EvalReport
+report.Summary() → string
+report.ExportJSON(path) → error
+LoadReport(path) → (*EvalReport, error)
+CompareReports(baseline, current) → string
+
+AssertContains(text), AssertNotContains(text),
+AssertMinLength(n), AssertMaxLength(n), AssertJSON(fields...),
+AssertToolUsed(name), AssertToolNotUsed(name),
+AssertMaxToolCalls(n), AssertMaxDuration(d), AssertCustom(name, fn)
+</code></pre></div>
+
+<hr />
+<h2 id="faq">FAQ</h2>
+<p><strong>Q: Does HerdAI require a specific LLM provider?</strong>
+No. OpenAI and Mistral are built in. Use <code>NewOpenAI</code> with a custom <code>BaseURL</code> for Groq, Together AI, Ollama, or any OpenAI-compatible API. Implement the <code>LLM</code> interface for non-compatible providers.</p>
+<p><strong>Q: Can I run it without an API key?</strong>
+Yes. Use <code>MockLLM</code> for testing. 8 of 11 examples work without any API key.</p>
+<p><strong>Q: Will my agents hang?</strong>
+No. Every operation has a <code>context.Context</code> deadline. If anything exceeds its deadline, it returns an error.</p>
+<p><strong>Q: Can different agents use different LLMs?</strong>
+Yes. Each agent has its own <code>LLM</code> field.</p>
+<p><strong>Q: Does RAG require a vector database?</strong>
+No. <code>InMemoryVectorStore</code> works out of the box with keyword search. Embeddings are optional.</p>
+<p><strong>Q: Can I add documents to RAG mid-conversation?</strong>
+Yes. Call <code>herdai.IngestDocuments()</code> at any time — the agent's next query will search the new documents.</p>
+<p><strong>Q: Can I load documents from a URL?</strong>
+Yes. Use <code>NewURLLoader("https://...")</code> or <code>NewMultiURLLoader(urls...)</code>. HTML is automatically stripped.</p>
+<p><strong>Q: Is it thread-safe?</strong>
+Yes. Conversation, MCP, and vector store all use proper synchronization. All 156 tests pass with Go's race detector.</p>
+<p><strong>Q: What reasoning pattern do agents use?</strong>
+ReAct (Reason → Act → Observe). The agent calls the LLM, optionally executes tools, feeds results back, and loops until the LLM returns a final answer.</p>
+<p><strong>Q: Can I nest managers?</strong>
+Yes, to any depth. Managers implement <code>Runnable</code>, so a manager's agent list can include other managers.</p>
+<hr />
+<h2 id="comparison">Comparison</h2>
+<h3 id="herdai-vs-other-frameworks">HerdAI vs Other Frameworks</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>HerdAI (Go)</th>
+<th>CrewAI (Python)</th>
+<th>AutoGen (Python)</th>
+<th>Eino (Go)</th>
+<th>Google ADK (Go)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td><strong>Go</strong></td>
+<td>Python</td>
+<td>Python</td>
+<td>Go</td>
+<td>Go</td>
+</tr>
+<tr>
+<td>Dependencies</td>
+<td><strong>Zero</strong></td>
+<td>50+</td>
+<td>30+</td>
+<td>CloudWeGo</td>
+<td>Google Cloud</td>
+</tr>
+<tr>
+<td>Multi-agent</td>
+<td><strong>4 strategies</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Chain/Graph</td>
+<td>Sub-agents</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td><strong>Built-in</strong></td>
+<td>Plugin</td>
+<td>Plugin</td>
+<td>External</td>
+<td>Vertex</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td><strong>Multi-layer</strong></td>
+<td>Basic</td>
+<td>Basic</td>
+<td>Redis</td>
+<td>Vertex RAG</td>
+</tr>
+<tr>
+<td>Tracing</td>
+<td><strong>OTel-style</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Callbacks</td>
+<td>OpenTelemetry</td>
+</tr>
+<tr>
+<td>HITL</td>
+<td><strong>Approve/Reject/Edit</strong></td>
+<td>No</td>
+<td>Basic</td>
+<td>Interrupt</td>
+<td>Confirmation</td>
+</tr>
+<tr>
+<td>Guardrails</td>
+<td><strong>10 built-in</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Composition</td>
+<td>Plugins</td>
+</tr>
+<tr>
+<td>Eval</td>
+<td><strong>Built-in</strong></td>
+<td>No</td>
+<td>No</td>
+<td>External</td>
+<td>Dev UI</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td><strong>Save/Resume</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Context</td>
+<td>Events</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td><strong>Built-in</strong></td>
+<td>Plugin</td>
+<td>Plugin</td>
+<td>Extension</td>
+<td>Toolbox</td>
+</tr>
+<tr>
+<td>Per-agent LLM</td>
+<td><strong>Yes</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Binary size</td>
+<td><strong>~8 MB</strong></td>
+<td>~200 MB+</td>
+<td>~200 MB+</td>
+<td>Varies</td>
+<td>Varies</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td><strong>156</strong></td>
+<td>Varies</td>
+<td>Varies</td>
+<td>Varies</td>
+<td>Varies</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>HerdAI — Build AI agent systems in Go that don't hang.</em></p>
+    <footer style="margin-top:60px;padding-top:20px;border-top:2px solid #e2e8f0;color:#94a3b8;font-size:9pt;text-align:center;">
+        HerdAI User Guide — Production-Grade AI Agent Framework for Go<br>
+        Generated March 02, 2026
+    </footer>
+</body>
+</html>
