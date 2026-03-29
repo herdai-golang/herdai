@@ -12,7 +12,6 @@ Introducing HerdAI: A Production-Grade AI Agent Framework for Go
 SUBTITLE (Medium kicker / subtitle field):
 How to build LLM agents, tool use, and multi-agent teams without dragging half of PyPI into production.
 
-=== START PASTE (delete the TITLE/SUBTITLE block above after you’ve set them in Medium) ===
 
 Most AI agent frameworks live in Python—and for good reason. The notebooks are there, the models are there, and the tutorials assume Python first.
 
