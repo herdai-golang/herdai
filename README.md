@@ -9,8 +9,6 @@
 
 HerdAI lets you build AI agents in Go that can use tools, call LLMs, work in teams, remember context, validate inputs/outputs, and retrieve knowledge from documents — all with zero external dependencies.
 
-### Install
-
 ```bash
 go get github.com/herdai-golang/herdai@latest
 ```
@@ -19,24 +17,30 @@ go get github.com/herdai-golang/herdai@latest
 import "github.com/herdai-golang/herdai"
 ```
 
+---
+
 ### Runnable examples (in this repo)
 
-All of these work **without an API key** (they use `MockLLM`). From a clone of the repository:
+All examples work **without an API key** — they use `MockLLM`. Clone the repo and run any of them:
 
 | Directory | What it shows |
 |-----------|----------------|
 | [`examples/hello_minimal`](examples/hello_minimal) | Smallest program: one agent, one answer |
-| [`examples/single_agent_tools`](examples/single_agent_tools) | One agent with **multiple tools** (two tool calls in parallel, then a final reply) |
-| [`examples/supervisor_three_agents`](examples/supervisor_three_agents) | **Supervisor pattern**: `StrategyLLMRouter` picks among three specialists, then `FINISH` |
-| [`examples/concurrency_benchmark`](examples/concurrency_benchmark) | Benchmark: parallel vs sequential managers (see that folder’s README) |
+| [`examples/single_agent_tools`](examples/single_agent_tools) | One agent, multiple tools — two parallel tool calls then a final reply |
+| [`examples/supervisor_three_agents`](examples/supervisor_three_agents) | **Supervisor pattern**: `StrategyLLMRouter` picks among three specialists |
+| [`examples/concurrent_questions`](examples/concurrent_questions) | 8 goroutines each using their own agent simultaneously — race-safe pattern |
+| [`examples/hitl_channel`](examples/hitl_channel) | **Human-in-the-loop** via `ChannelHITLHandler` — simulates a UI/WebSocket approval flow |
+| [`examples/rag_simple`](examples/rag_simple) | Keyword RAG with `SimpleRAG` and an in-memory vector store |
+| [`examples/concurrency_benchmark`](examples/concurrency_benchmark) | Parallel vs sequential benchmark; see also [`benchmark/`](benchmark/) for the full suite |
 
 ```bash
-cd examples/hello_minimal && go run .
-cd examples/single_agent_tools && go run .
+cd examples/hello_minimal          && go run .
+cd examples/single_agent_tools     && go run .
 cd examples/supervisor_three_agents && go run .
+cd examples/concurrent_questions   && go run .
+cd examples/hitl_channel           && go run .
+cd examples/rag_simple             && go run .
 ```
-
-In your own module, after `go get`, copy an example `main.go` or follow [Quick Start](#quick-start) below.
 
 ---
 
@@ -55,10 +59,11 @@ In your own module, after `go get`, copy an example `main.go` or follow [Quick S
 - [Guardrails](#guardrails)
 - [Human-in-the-Loop](#human-in-the-loop)
 - [Tracing](#tracing)
+- [Tool Caching](#tool-caching)
 - [Sessions (Persistence)](#sessions-persistence)
 - [Eval / Testing](#eval--testing)
 - [MCP Integration](#mcp-integration)
-- [All Examples](#all-examples)
+- [Benchmarks](#benchmarks)
 - [Comparison with Other Frameworks](#comparison-with-other-frameworks)
 - [Running Tests](#running-tests)
 
@@ -66,46 +71,33 @@ In your own module, after `go get`, copy an example `main.go` or follow [Quick S
 
 ## Project Structure
 
-This repository contains **only the framework** — the library you import. Applications that use HerdAI (e.g. the Strategy Advisor) live in **separate Go modules** and depend on this library.
+This repository contains **only the framework** — the library you import. Applications that use HerdAI live in **separate Go modules**.
 
 ```
 herdai/
 ├── *.go                 ← The framework. You import this.
-├── *_test.go            ← Unit and integration tests
+├── *_test.go            ← 156 unit and integration tests
 ├── go.mod               ← Module: github.com/herdai-golang/herdai
-├── examples/            ← Runnable examples (hello, tools, supervisor, benchmark)
+├── examples/            ← Runnable examples (all MockLLM, no API key)
+├── benchmark/           ← Concurrency benchmark suite (Go + Python comparison)
 ├── docs/                ← Long-form documentation
 ├── LICENSE
 └── README.md
 ```
 
-**To use the framework**, import it in your own Go module:
-
-```go
-import "github.com/herdai-golang/herdai"
-```
-
-**Example layout** (library + your app):
+For local development in your own module:
 
 ```
 work/
 ├── herdai/              ← This library
-└── my-app/              ← Your service or CLI (imports herdai)
+└── my-app/              ← Your service (go.mod: replace github.com/herdai-golang/herdai => ../herdai)
 ```
-
-For local development, in `my-app/go.mod` you can use:
-
-`replace github.com/herdai-golang/herdai => ../herdai`
-
-The **Strategy Advisor** (a production-style web UI built on HerdAI) is maintained as a **separate module** (not in this tree).
 
 ---
 
 ## Quick Start
 
-### 1. Minimal Agent (no API key needed)
-
-Same idea as [`examples/hello_minimal`](examples/hello_minimal).
+### 1. Minimal agent (no API key)
 
 ```go
 package main
@@ -138,7 +130,7 @@ func main() {
 }
 ```
 
-### 2. With a Real LLM (Mistral)
+### 2. With a real LLM (Mistral)
 
 ```go
 llm := herdai.NewMistral(herdai.OpenAIConfig{
@@ -164,32 +156,32 @@ Set your key first: `export MISTRAL_API_KEY=your-key-here`
 
 ### Agents
 
-An Agent is the basic unit. It has a role, goal, optional tools, and an LLM. You call `agent.Run(ctx, input, conversation)` and it returns a `*Result`.
+An `Agent` is the basic unit. It has a role, goal, optional tools, and an LLM. Call `agent.Run(ctx, input, conv)` and it returns a `*Result`.
 
 ```go
 agent := herdai.NewAgent(herdai.AgentConfig{
-    ID:        "analyst",
-    Role:      "Market Analyst",
-    Goal:      "Provide data-driven market insights.",
-    Backstory: "You are a senior analyst at a top consulting firm.",
-    LLM:       llm,
-    Timeout:   60 * time.Second,  // default: 2 minutes
-    MaxToolCalls: 5,              // default: 10
+    ID:           "analyst",
+    Role:         "Market Analyst",
+    Goal:         "Provide data-driven market insights.",
+    Backstory:    "You are a senior analyst at a top consulting firm.",
+    LLM:          llm,
+    Timeout:      60 * time.Second, // default: 2 minutes
+    MaxToolCalls: 5,                // default: 10
 })
 ```
 
 ### Tools
 
-Tools give agents capabilities beyond text generation. Define a tool with a name, description, parameters, and an execute function:
+Tools give agents capabilities beyond text generation. `Parameters` is a slice of `ToolParam`; `Execute` always receives a `context.Context` as its first argument:
 
 ```go
 weatherTool := herdai.Tool{
     Name:        "get_weather",
     Description: "Get the current weather for a city",
-    Parameters: map[string]herdai.ToolParam{
-        "city": {Type: "string", Description: "City name", Required: true},
+    Parameters: []herdai.ToolParam{
+        {Name: "city", Type: "string", Description: "City name", Required: true},
     },
-    Execute: func(args map[string]any) (string, error) {
+    Execute: func(ctx context.Context, args map[string]any) (string, error) {
         city := args["city"].(string)
         return fmt.Sprintf("Weather in %s: 22°C, sunny", city), nil
     },
@@ -204,62 +196,54 @@ agent := herdai.NewAgent(herdai.AgentConfig{
 })
 ```
 
-When the LLM decides it needs weather data, it calls the tool automatically through function calling.
+When the LLM returns multiple tool calls in one response, HerdAI executes them **concurrently by default** (`ParallelToolCalls: true`). To disable:
 
-> **Example:** [`examples/single_agent_tools`](examples/single_agent_tools) — one agent, multiple tools (mock LLM).
+```go
+seqOnly := false
+agent := herdai.NewAgent(herdai.AgentConfig{
+    ParallelToolCalls: &seqOnly,
+    // ...
+})
+```
+
+> **Example:** [`examples/single_agent_tools`](examples/single_agent_tools) — two tools called in parallel, result merged.
 
 ### Managers (Multi-Agent)
 
-A Manager orchestrates multiple agents. There are 4 strategies:
+A `Manager` orchestrates multiple agents. Pick a strategy:
 
 | Strategy | How it works | Best for |
 |----------|-------------|----------|
-| `StrategySequential` | Agents run one after another. Each gets the previous agent's output. | Pipelines (research → write → edit) |
-| `StrategyParallel` | All agents run concurrently. Results are merged. | Independent analyses (SWOT + Porter + PESTEL) |
-| `StrategyRoundRobin` | Agents take turns until done. | Iterative refinement (propose → critique → refine) |
-| `StrategyLLMRouter` | An LLM picks which agent runs next (supervisor). | Dynamic workflows |
-
-> **Example:** [`examples/supervisor_three_agents`](examples/supervisor_three_agents) — supervisor + three specialists using `StrategyLLMRouter`.
+| `StrategySequential` | Agents run one after another; each gets the previous agent's output | Pipelines (research → write → edit) |
+| `StrategyParallel` | All agents run concurrently in goroutines; results are merged | Independent analyses (SWOT + Porter + PESTEL) |
+| `StrategyRoundRobin` | Agents take turns until done or max turns reached | Iterative refinement (propose → critique → refine) |
+| `StrategyLLMRouter` | An LLM picks which agent runs next | Dynamic / supervisor workflows |
 
 **Sequential pipeline:**
 
 ```go
-researcher := herdai.NewAgent(herdai.AgentConfig{
-    ID: "researcher", Role: "Researcher", Goal: "Find key facts", LLM: llm,
-})
-writer := herdai.NewAgent(herdai.AgentConfig{
-    ID: "writer", Role: "Writer", Goal: "Turn research into a clear report", LLM: llm,
-})
-
 pipeline := herdai.NewManager(herdai.ManagerConfig{
     ID:       "report-pipeline",
     Strategy: herdai.StrategySequential,
-    Agents:   []herdai.Runnable{researcher, writer},
+    Agents:   []herdai.Runnable{researcherAgent, writerAgent},
 })
-
 result, _ := pipeline.Run(ctx, "Analyze the AI code review market", conv)
 ```
 
-**Parallel analysis:**
+**Parallel analysis (all agents start at the same time):**
 
 ```go
-porter := herdai.NewAgent(herdai.AgentConfig{
-    ID: "porter", Role: "Porter's Five Forces Analyst", Goal: "Analyze competitive forces", LLM: llm,
-})
-swot := herdai.NewAgent(herdai.AgentConfig{
-    ID: "swot", Role: "SWOT Analyst", Goal: "Identify strengths, weaknesses, opportunities, threats", LLM: llm,
-})
-
 team := herdai.NewManager(herdai.ManagerConfig{
     ID:       "analysis-team",
     Strategy: herdai.StrategyParallel,
-    Agents:   []herdai.Runnable{porter, swot},
+    Agents:   []herdai.Runnable{porterAgent, swotAgent, pestelAgent},
 })
+// All three run in goroutines; wall time ≈ slowest agent, not sum of all.
 ```
 
 **Nested managers (hierarchical teams):**
 
-Managers implement `Runnable`, so you can nest them:
+`Manager` implements `Runnable`, so you can nest them freely:
 
 ```go
 researchTeam := herdai.NewManager(herdai.ManagerConfig{
@@ -275,7 +259,7 @@ fullPipeline := herdai.NewManager(herdai.ManagerConfig{
 })
 ```
 
-Use [`examples/supervisor_three_agents`](examples/supervisor_three_agents) for LLM routing; compose `StrategySequential` / `StrategyParallel` managers as in the code above.
+> **Example:** [`examples/supervisor_three_agents`](examples/supervisor_three_agents) — `StrategyLLMRouter` supervisor picks among specialists.
 
 ### Conversations
 
@@ -284,14 +268,11 @@ A `Conversation` is a thread-safe message history shared between agents:
 ```go
 conv := herdai.NewConversation()
 
-// First agent writes to it
 result1, _ := researcher.Run(ctx, "Find market data", conv)
-
-// Second agent reads the history
 result2, _ := writer.Run(ctx, "Write a report based on the research", conv)
 ```
 
-Pass `nil` if you don't need conversation history.
+Pass `nil` when you don't need conversation history. All `Conversation` methods are safe for concurrent use — required by `StrategyParallel` where multiple agents write simultaneously.
 
 ---
 
@@ -301,16 +282,12 @@ HerdAI works with any OpenAI-compatible API. Each agent can use a different prov
 
 ```go
 // OpenAI
-openaiLLM := herdai.NewOpenAI(herdai.OpenAIConfig{
-    Model: "gpt-4o-mini",
-})
+openaiLLM := herdai.NewOpenAI(herdai.OpenAIConfig{Model: "gpt-4o-mini"})
 
 // Mistral
-mistralLLM := herdai.NewMistral(herdai.OpenAIConfig{
-    Model: "mistral-small-latest",
-})
+mistralLLM := herdai.NewMistral(herdai.OpenAIConfig{Model: "mistral-small-latest"})
 
-// Groq
+// Groq (OpenAI-compatible endpoint)
 groqLLM := herdai.NewOpenAI(herdai.OpenAIConfig{
     BaseURL: "https://api.groq.com/openai/v1",
     APIKey:  os.Getenv("GROQ_API_KEY"),
@@ -324,12 +301,14 @@ ollamaLLM := herdai.NewOpenAI(herdai.OpenAIConfig{
     APIKey:  "ollama",
 })
 
-// Mock (for testing, no API key needed)
-mock := &herdai.MockLLM{}
-mock.PushResponse(herdai.LLMResponse{Content: "Hello!"})
+// MockLLM (testing — no API key, deterministic responses)
+mock := herdai.NewMockLLM(
+    herdai.MockResponse{Content: "Hello!"},
+    herdai.MockResponse{Content: "Second response."},
+)
 ```
 
-**Per-agent providers** — one team, multiple LLMs:
+**Per-agent providers** — mix LLMs in one team:
 
 ```go
 analyst  := herdai.NewAgent(herdai.AgentConfig{LLM: mistralLLM, ...})
@@ -341,64 +320,51 @@ reviewer := herdai.NewAgent(herdai.AgentConfig{LLM: ollamaLLM, ...})
 
 ## RAG (Retrieval-Augmented Generation)
 
-RAG lets agents answer questions grounded in your documents. HerdAI supports loading documents from **files**, **strings**, **URLs**, and **io.Reader** — and you can add new documents at any time during a conversation.
+RAG lets agents answer questions grounded in your documents. HerdAI supports loading from **files**, **strings**, **URLs**, **directories**, and `io.Reader` — and you can add documents at any point during a conversation.
 
-### How It Works
+### How it works
 
-1. **Ingest** documents at startup (split into chunks, store in vector store)
-2. **Query** — when the agent receives a question, it retrieves relevant chunks
+1. **Ingest** documents at startup (split into chunks, embed, store in vector store)
+2. **Query** — on each agent call, retrieve the most relevant chunks
 3. **Generate** — the LLM answers using the retrieved context
 
-### Load From Files
+### Load from files
 
 ```go
-store := herdai.NewInMemoryVectorStore()
-
-loader := herdai.NewTextLoader("docs/product.md")
+store    := herdai.NewInMemoryVectorStore()
+loader   := herdai.NewTextLoader("docs/product.md")
 pipeline := herdai.NewIngestionPipeline(herdai.IngestionConfig{
     Loader:   loader,
     Chunker:  herdai.DefaultChunker(),
-    Embedder: herdai.NewNoOpEmbedder(),
+    Embedder: herdai.NewNoOpEmbedder(), // keyword search (no API key)
     Store:    store,
 })
 pipeline.Ingest(ctx)
 ```
 
-### Load From a URL
+### Load from a URL
 
 ```go
 urlLoader := herdai.NewURLLoader("https://example.com/docs/api-reference")
-docs, _ := urlLoader.Load(ctx)
-
+docs, _   := urlLoader.Load(ctx)
 herdai.IngestDocuments(ctx, store, herdai.DefaultChunker(), herdai.NewNoOpEmbedder(), docs...)
+
+// Multiple URLs at once:
+loader := herdai.NewMultiURLLoader("https://example.com/page1", "https://example.com/page2")
 ```
 
-Load from multiple URLs at once:
+### Load from strings or a directory
 
 ```go
-loader := herdai.NewMultiURLLoader(
-    "https://example.com/page1",
-    "https://example.com/page2",
-    "https://example.com/page3",
-)
-```
-
-### Load From Strings (In-Memory)
-
-```go
-loader := herdai.NewStringsLoader(map[string]string{
-    "company-policy.md": "All employees must...",
-    "product-faq.md":    "Q: How does billing work?...",
+herdai.NewStringsLoader(map[string]string{
+    "policy.md": "All employees must...",
+    "faq.md":    "Q: How does billing work?...",
 })
+
+herdai.NewDirectoryLoader("docs/", []string{".md", ".txt"})
 ```
 
-### Load an Entire Directory
-
-```go
-loader := herdai.NewDirectoryLoader("docs/", []string{".md", ".txt"})
-```
-
-### Create the RAG-Enabled Agent
+### Attach RAG to an agent
 
 ```go
 agent := herdai.NewAgent(herdai.AgentConfig{
@@ -408,66 +374,49 @@ agent := herdai.NewAgent(herdai.AgentConfig{
     LLM:  llm,
     RAG:  herdai.SimpleRAG(store, 5), // retrieve top 5 chunks per query
 })
-
-result, _ := agent.Run(ctx, "How do I deploy the app?", conv)
 ```
 
-### Add Documents Mid-Conversation
-
-You don't need to restart. Add documents dynamically at any time:
+### Advanced RAG configuration
 
 ```go
-newDoc := herdai.Document{
-    Content: "Version 3.0 adds streaming support and...",
-    Source:  "release-notes-v3.md",
-}
-herdai.IngestDocuments(ctx, store, herdai.DefaultChunker(), herdai.NewNoOpEmbedder(), newDoc)
-
-// The agent's next query will now search the new document too
-result, _ := agent.Run(ctx, "What's new in version 3.0?", conv)
-```
-
-### Advanced RAG Configuration
-
-```go
-agent := herdai.NewAgent(herdai.AgentConfig{
-    // ...
-    RAG: &herdai.RAGConfig{
-        Retriever:   herdai.NewHybridRetriever(store, 0.7), // keyword + vector mix
-        TopK:        10,
-        MinScore:    0.3,
-        CiteSources: true,
-        QueryRewriter: func(input string) string {
-            return "technical documentation: " + input
-        },
+RAG: &herdai.RAGConfig{
+    Retriever:   herdai.NewHybridRetriever(store, 0.7), // keyword + vector blend
+    TopK:        10,
+    MinScore:    0.3,
+    CiteSources: true,
+    QueryRewriter: func(input string) string {
+        return "technical documentation: " + input
     },
-})
+}
 ```
 
-### Using Embeddings (for Semantic Search)
+### Semantic search with embeddings
 
-The default `NoOpEmbedder` uses keyword matching. For semantic similarity, plug in an embedder:
+The default `NoOpEmbedder` uses keyword matching. For semantic similarity:
 
 ```go
-embedder := herdai.NewMistralEmbedder(herdai.EmbedderConfig{
-    Model: "mistral-embed",
-})
+embedder := herdai.NewMistralEmbedder(herdai.EmbedderConfig{Model: "mistral-embed"})
 // or
-embedder := herdai.NewOpenAIEmbedder(herdai.EmbedderConfig{
-    Model: "text-embedding-3-small",
-})
+embedder := herdai.NewOpenAIEmbedder(herdai.EmbedderConfig{Model: "text-embedding-3-small"})
+```
+
+### Add documents mid-conversation
+
+```go
+newDoc := herdai.Document{Content: "Version 3.0 adds streaming support...", Source: "v3-notes.md"}
+herdai.IngestDocuments(ctx, store, herdai.DefaultChunker(), herdai.NewNoOpEmbedder(), newDoc)
+// The agent's next query automatically searches the new document.
 ```
 
 ---
 
 ## Memory
 
-Multi-layer memory gives agents context from past interactions. Memories are automatically recalled before each LLM call.
+Multi-layer memory gives agents context from past interactions. Memories are recalled automatically before each LLM call.
 
 ```go
 memory := herdai.NewInMemoryStore()
 
-// Pre-load facts the agent should know
 memory.Store(ctx, herdai.MemoryEntry{
     Kind:    herdai.MemoryFact,
     Content: "The user prefers Go over Python",
@@ -479,11 +428,8 @@ memory.Store(ctx, herdai.MemoryEntry{
 })
 
 agent := herdai.NewAgent(herdai.AgentConfig{
-    ID:     "assistant",
-    Role:   "Personal Assistant",
-    Goal:   "Help the user with context from past interactions",
-    LLM:    llm,
     Memory: memory,
+    // ...
 })
 ```
 
@@ -494,7 +440,7 @@ agent := herdai.NewAgent(herdai.AgentConfig{
 | `MemoryFact` | Things the agent should know ("user is on the Pro plan") |
 | `MemoryEpisode` | Past events ("analyzed competitor X on Jan 5") |
 | `MemoryInstruction` | Standing orders ("always respond in bullet points") |
-| `MemorySummary` | Compressed histories |
+| `MemorySummary` | Compressed conversation histories |
 
 Features: keyword search with relevance scoring, tag filtering, TTL expiration, session/agent scoping, export/import to JSON.
 
@@ -506,18 +452,16 @@ Validate and transform inputs before the LLM sees them, and outputs before they 
 
 ```go
 agent := herdai.NewAgent(herdai.AgentConfig{
-    ID: "safe-agent", Role: "Assistant", Goal: "Help safely", LLM: llm,
-
     InputGuardrails: herdai.NewGuardrailChain(
-        herdai.ContentFilter("injection", "pii"), // block prompt injection & PII
+        herdai.ContentFilter("injection", "pii"),
         herdai.MaxLength(10000),
     ),
-
     OutputGuardrails: herdai.NewGuardrailChain(
-        herdai.RedactPII(),       // remove emails, phone numbers, SSNs
+        herdai.RedactPII(),
         herdai.MinLength(20),
         herdai.BlockKeywords("confidential", "internal only"),
     ),
+    // ...
 })
 ```
 
@@ -544,18 +488,16 @@ Pause agent execution for human approval before tool calls:
 
 ```go
 agent := herdai.NewAgent(herdai.AgentConfig{
-    ID: "careful-agent", Role: "Analyst", Goal: "Analyze with oversight",
-    LLM: llm, Tools: tools,
-
     HITL: &herdai.HITLConfig{
         Policy:         herdai.HITLPolicyDangerous,
         DangerousTools: []string{"delete_file", "execute_command"},
         Handler:        herdai.NewCLIApprovalHandler(), // prompts in terminal
     },
+    // ...
 })
 ```
 
-**Decisions:** Approve, Reject, Edit (modify tool arguments), ApproveAll (skip future prompts), Abort.
+**Decisions:** `Approve`, `Reject`, `Edit` (modify tool arguments before running), `ApproveAll` (skip future prompts this run), `Abort`.
 
 **Policies:**
 
@@ -566,46 +508,73 @@ agent := herdai.NewAgent(herdai.AgentConfig{
 | `HITLPolicyDangerous` | Only ask for tools in the dangerous list |
 | `HITLPolicyCustom` | Your own function decides |
 
-For WebSocket/UI integration, use `herdai.NewChannelHITLHandler()` instead of CLI.
+For WebSocket or UI integration, use `herdai.NewChannelHITLHandler()` instead of CLI.
 
-> **Example:** The **Strategy Advisor** app (separate module) is a full web chat built on HerdAI with human-in-the-loop.
+> **Example:** [`examples/hitl_channel`](examples/hitl_channel) — channel-based approval handler.
 
 ---
 
 ## Tracing
 
-OpenTelemetry-style hierarchical tracing for every agent, tool, LLM call, and RAG retrieval:
+Hierarchical span tracing for every agent, tool, LLM call, and RAG retrieval:
 
 ```go
 tracer := herdai.NewTracer()
-ctx := herdai.ContextWithTracer(context.Background(), tracer)
+ctx    := herdai.ContextWithTracer(context.Background(), tracer)
 
 result, _ := pipeline.Run(ctx, "Analyze the market", conv)
 
 fmt.Println(tracer.Summary())
-```
+// ✓ [manager] pipeline       (2.3s) ok
+//   ✓ [agent]   researcher   (1.1s) ok
+//     ✓ [llm]   chat         (800ms) ok
+//     ✓ [tool]  web_search   (300ms) ok  cached=false
+//   ✓ [agent]   writer       (1.2s) ok
+//     ✓ [llm]   chat         (1.1s) ok
+//     ✓ [custom] rag:retrieve (5ms)  ok
 
-Output:
-
-```
-✓ [manager] pipeline (2.3s) ok
-  ✓ [agent] researcher (1.1s) ok
-    ✓ [llm] chat (800ms) ok
-    ✓ [tool] web_search (300ms) ok
-  ✓ [agent] writer (1.2s) ok
-    ✓ [llm] chat (1.1s) ok
-    ✓ [custom] rag:retrieve (5ms) ok
-```
-
-```go
 stats := tracer.Stats()
-fmt.Printf("LLM calls: %d, Tool calls: %d, Total spans: %d\n",
-    stats.LLMCalls, stats.ToolCalls, stats.TotalSpans)
+// LLMCalls: 3, ToolCalls: 1, TotalSpans: 7
 
-data := tracer.Export() // JSON for analysis/dashboards
+data := tracer.Export() // JSON for dashboards or offline analysis
 ```
 
 **8 span kinds:** `agent`, `tool`, `llm`, `manager`, `mcp`, `memory`, `session`, `custom`
+
+---
+
+## Tool Caching
+
+Context-aware caching for tool results. Automatically re-runs tools only when the context changes meaningfully.
+
+```go
+cache := herdai.NewToolCache(herdai.ToolCacheConfig{
+    NewWordThreshold: 3,              // invalidate if 3+ meaningful words change
+    MaxAge:           10*time.Minute, // optional TTL
+    MaxEntries:       50,
+
+    // Selective invalidation: only re-run tools whose fields actually changed
+    ToolDeps: map[string][]string{
+        "financial_analysis": {"idea", "industry", "revenue"},
+        "competitor_intel":   {"idea", "industry", "customer"},
+        "gtm_analysis":       {"idea", "customer", "geography"},
+    },
+})
+
+// Wrap individual tool handlers with the cache:
+myTool := herdai.Tool{
+    Name:    "financial_analysis",
+    Execute: cache.Wrap("financial_analysis", expensiveAPICall),
+}
+
+agent := herdai.NewAgent(herdai.AgentConfig{
+    Tools:     []herdai.Tool{myTool},
+    ToolCache: cache,
+    // ...
+})
+```
+
+When the user changes "customer" from "architects" to "hospitals", only tools whose `ToolDeps` include `"customer"` are invalidated; tools that don't depend on that field keep their cached results. Cache hits are visible as `cached: true` on tracing spans.
 
 ---
 
@@ -616,14 +585,14 @@ Save and resume agent conversations across restarts:
 ```go
 store, _ := herdai.NewFileSessionStore("./sessions")
 
-// Create session and run
+// Run and save
 session := herdai.NewSession("market-analysis")
-conv := session.GetConversation()
+conv    := session.GetConversation()
 result, _ := agent.Run(ctx, "Analyze AI market", conv)
 session.AddResult(result)
 store.Save(session)
 
-// Later: resume exactly where you left off
+// Resume exactly where you left off
 loaded, _ := store.Load(session.ID)
 loaded.Resume()
 conv = loaded.GetConversation() // full history is restored
@@ -654,24 +623,16 @@ suite.AddCase(herdai.EvalCase{
 
 report := suite.Run(ctx)
 fmt.Println(report.Summary())
-```
+// ╔══════════════════════════════════╗
+// ║ EVAL REPORT: quality-tests       ║
+// ║ Total: 5  Passed: 4  Failed: 1   ║
+// ║ Pass Rate: 80.0%   Duration: 3.2s ║
+// ╚══════════════════════════════════╝
 
-Output:
-
-```
-╔══════════════════════════════════════════════════════╗
-║  EVAL REPORT: quality-tests                         ║
-║  Total: 5   Passed: 4   Failed: 1                   ║
-║  Pass Rate: 80.0%    Duration: 3.2s                  ║
-╚══════════════════════════════════════════════════════╝
-```
-
-```go
+// Export and compare against a baseline to catch regressions:
 report.ExportJSON("results/v1.json")
-
-// Compare with a baseline to catch regressions
 baseline, _ := herdai.LoadReport("results/v1.json")
-current := suite.Run(ctx)
+current     := suite.Run(ctx)
 fmt.Println(herdai.CompareReports(baseline, current))
 ```
 
@@ -696,57 +657,165 @@ agent := herdai.NewAgent(herdai.AgentConfig{
 // Agent auto-discovers tools from the MCP server via JSON-RPC 2.0
 ```
 
-Multiple MCP servers per agent, manager-level propagation, and `DisableMCP: true` to opt out.
+Multiple MCP servers per agent, manager-level propagation to all agents, and `DisableMCP: true` per agent to opt out.
 
 ---
 
-## All examples
+## Benchmarks
 
-This repository ships **runnable** examples under `examples/` (see the [table at the top](#runnable-examples-in-this-repo)). They use `MockLLM` unless you swap in `NewMistral` / `NewOpenAI` with a real API key.
+HerdAI is built on two stacked layers of native Go concurrency:
 
-| App | Description |
-|-----|-------------|
-| **Strategy Advisor** (optional, separate repo) | Full web app for startup idea validation — not part of this module. |
+- **Manager-level:** `StrategyParallel` runs all agents as goroutines simultaneously.
+  Wall time ≈ slowest agent, not the sum.
+- **Agent-level:** `ParallelToolCalls` (on by default) runs all tool calls in one LLM
+  response as goroutines simultaneously. Wall time ≈ slowest tool, not the sum.
 
-Patterns such as RAG, MCP, streaming, and eval are covered in this README and in `docs/`; start from the snippets here and the [`examples/`](examples/) programs above.
+Both layers are **on by default**. Other frameworks require explicit opt-in.
+
+### Competitive Intelligence Engine — measured results
+
+**6 agents · 18 tool calls · 12 LLM calls per run.
+Simulated latency: 200 ms per LLM call · 80 ms per tool call.
+Hardware: Apple M3 Pro.**
+
+| Scenario | HerdAI | LangGraph 1.1 | AutoGen 0.7 | CrewAI 1.12 | Pure asyncio |
+|---|---|---|---|---|---|
+| **par agents + par tools** | **486 ms** | 490 ms | 490 ms | ~484 ms | 484 ms |
+| par agents + seq tools | **728 ms** | 733 ms | 727 ms | ~727 ms | 727 ms |
+| seq agents + par tools | 2 904 ms | 2 905 ms | 2 902 ms | ~2 899 ms | 2 899 ms |
+| **seq agents + seq tools** | 3 875 ms | 3 890 ms | 3 882 ms | ~3 871 ms | 3 871 ms |
+| **Speedup (seq÷par)** | **8×** | 8× | 8× | 8× | 8× |
+
+> **Key insight:** For I/O-bound workloads (network API calls), Go goroutines and Python asyncio achieve the same wall-clock time. The difference appears with CPU-bound work (embedding, tokenisation, local inference) where the Python GIL prevents simultaneous multi-core use — goroutines do not have this constraint.
+
+### Formal Go micro-benchmarks (20 ms LLM · 8 ms tools)
+
+```
+BenchmarkParallelAgents_ParallelTools-11         100    51 ms/op
+BenchmarkParallelAgents_SequentialTools-11        60    79 ms/op
+BenchmarkSequentialAgents_ParallelTools-11        14   309 ms/op
+BenchmarkSequentialAgents_SequentialTools-11      10   417 ms/op
+```
+
+**Scale sweep — adding agents costs nothing in parallel mode:**
+
+```
+BenchmarkScaleAgents_Parallel/agents=1   90   51.5 ms/op
+BenchmarkScaleAgents_Parallel/agents=2   90   51.7 ms/op
+BenchmarkScaleAgents_Parallel/agents=4   88   51.9 ms/op
+BenchmarkScaleAgents_Parallel/agents=6   88   52.1 ms/op
+```
+
+Wall time is flat at ≈ 51 ms whether there is 1 agent or 6.
+
+### Run the benchmarks yourself
+
+```bash
+cd benchmark
+
+# Full comparison: Go demo app + all Python frameworks
+bash compare.sh
+
+# Go demo — 4 scenarios with detailed table (no API key)
+go run . --llm-delay 200ms --tool-delay 80ms
+
+# Formal Go micro-benchmarks
+go test -bench=. -benchtime=5s -count=3
+
+# Race detector — proves goroutine safety (expect: zero DATA RACE reports)
+go test -race ./...
+
+# Python frameworks individually
+python3 python/baseline.py        # pure asyncio baseline
+python3 python/langgraph_bench.py # actual LangGraph 1.1.x
+python3 python/autogen_bench.py   # actual AutoGen 0.7.5
+python3 python/crewai_bench.py    # CrewAI 1.12.2 timing + code pattern
+
+# Master comparison table (Go + all Python)
+python3 python/compare_all.py
+```
+
+See [`benchmark/BENCHMARK.md`](benchmark/BENCHMARK.md) for detailed methodology, expected outputs, and the full Go framework comparison.
 
 ---
 
 ## Comparison with Other Frameworks
 
-| Feature | HerdAI | CrewAI (Python) | AutoGen (Python) | Eino (Go) | Google ADK (Go) |
-|---------|-----------|----------------|-----------------|-----------|----------------|
-| Language | **Go** | Python | Python | Go | Go |
-| Dependencies | **Zero** | 50+ | 30+ | CloudWeGo | Google Cloud |
-| Multi-agent strategies | **4** (seq, parallel, round-robin, LLM router) | Yes | Yes | Chain/Graph | Sub-agents |
-| Multi-layer memory | **Yes** (4 kinds, TTL, tags, search) | Basic | Basic | Redis | Vertex RAG |
-| RAG | **Built-in** (files, URLs, strings, embeddings) | Plugin | Plugin | External | Vertex |
-| OTel-style tracing | **Yes** (hierarchical spans) | No | No | Callbacks | OpenTelemetry |
-| HITL | **Approve/Reject/Edit/Abort** | No | Basic | Interrupt | Confirmation |
-| Guardrails | **10 built-in** | No | No | Composition | Plugins |
-| Eval harness | **Built-in** (12 assertions, regression) | No | No | External | Dev UI |
-| Session persistence | **Save/Resume** | No | No | Context | Events |
-| MCP | **Built-in** | Plugin | Plugin | Extension | Toolbox |
-| Per-agent LLM | **Yes** | No | No | Yes | Yes |
-| Binary size | **~8 MB** | ~200 MB+ | ~200 MB+ | Varies | Varies |
-| Test suite | **156 tests** | Varies | Varies | Varies | Varies |
+### vs. Python frameworks (CrewAI · AutoGen · LangGraph)
+
+| Feature | **HerdAI** | CrewAI | AutoGen | LangGraph |
+|---------|-----------|--------|---------|-----------|
+| **Language** | Go | Python | Python | Python |
+| **Dependencies** | **Zero** | 78 packages | 65 packages | 42 packages |
+| **Cold start** | **< 10 ms** (compiled binary) | ~5–8 s | ~4–6 s | ~3–5 s |
+| **Memory (idle)** | **~20 MB** | ~220 MB | ~180 MB | ~150 MB |
+| **Binary size** | **~8 MB** | ~300 MB venv | ~250 MB venv | ~200 MB venv |
+| **Parallel agents (default)** | **✅** | ❌ sequential by default | ❌ must use `asyncio.gather` | ✅ via `Send()` fan-out |
+| **Parallel tools (default)** | **✅** | ❌ not supported within one agent | ❌ manual | ❌ manual |
+| **CPU-bound parallelism** | **✅** goroutines use all cores | ❌ GIL | ❌ GIL | ❌ GIL |
+| **HITL** | **Approve/Reject/Edit/Abort** | No | Basic | No |
+| **Guardrails** | **10 built-in** | No | No | No |
+| **Eval harness** | **Built-in** (12 assertions) | No | No | No |
+| **Tool caching** | **Context-aware, field-aware** | No | No | No |
+| **MockLLM (no API key)** | **✅** | ❌ | ❌ | ❌ |
+| **Race-safe proof** | **`go test -race` (0 races)** | N/A | N/A | N/A |
+| **Sessions** | **Save/Resume** | No | No | Checkpoints |
+| **MCP** | **Built-in** | Plugin | Plugin | External |
+
+### vs. Go frameworks (AgenticGoKit · Eino · Google ADK · ZenModel · Agent-SDK-Go)
+
+| Feature | **HerdAI** | AgenticGoKit | Eino (ByteDance) | Google ADK Go | ZenModel | Agent-SDK-Go |
+|---|---|---|---|---|---|---|
+| **Zero external dependencies** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Parallel agents (default)** | **✅** | ✅ | ✅ | ✅ | ✅ | Configurable |
+| **Parallel tools (default)** | **✅** | Not documented | Not documented | Not documented | Not documented | Not documented |
+| **MockLLM — no API key needed** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **`go test -race` clean** | **✅ (156 tests)** | Not published | Not published | Not published | Not published | Not published |
+| **HITL (approve/reject/edit/abort)** | **✅** | ❌ | Partial (interrupt) | Partial (MCP confirmation) | ❌ | Partial |
+| **Built-in guardrails** | **✅** | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Built-in eval / testing** | **✅** | ❌ | ❌ | ✅ (UI) | ❌ | ❌ |
+| **Tool result caching** | **✅** | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **MCP** | **✅** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **Tracing** | **✅** spans | ✅ OpenTelemetry | ✅ callbacks | ✅ OpenTelemetry | ❌ | ✅ |
+| **Sessions / persistence** | **✅** | Partial | ✅ | ✅ | ✅ SQLite | ✅ |
+| **Streaming** | Provider-dep. | **✅ streaming-first** | ✅ | ✅ | ✅ | ✅ |
+| **LLM providers** | OpenAI-compatible | OpenAI, Anthropic, Ollama, Azure, HF | OpenAI, Claude, Gemini, Ollama | Gemini-first | Any (processors) | OpenAI, Anthropic, Vertex |
+| **Orchestration strategies** | Sequential, Parallel, RoundRobin, LLMRouter | Sequential, Parallel, DAG, Loop | Chain, Graph, Workflow | Modular hierarchy | Sequential, Parallel, Branching, Loop | Sequential, Parallel |
+| **Maturity** | Good | Beta (v0.5.6) | Production (ByteDance) | Production (Google) | Early (v0.1.0) | Good (v0.2.x) |
+| **Community stars** | Small | Very small (~120) | **Large (10 K+)** | **Google-backed** | Very small | Small |
+
+**HerdAI is the only Go AI agent framework with all of:**
+1. Zero external dependencies
+2. Parallel agents AND parallel tools enabled by default
+3. `MockLLM` — every example runs without an API key
+4. HITL with approve / reject / edit / abort decisions
+5. Built-in guardrails, eval harness, and context-aware tool caching
+6. Proven race-free via `go test -race` across 156 tests
+
+**Where other Go frameworks lead:**
+- **Eino** — battle-tested at ByteDance (Doubao, TikTok) at massive scale; richest graph composition
+- **Google ADK** — A2A protocol, 30+ databases via MCP Toolbox, Google Cloud integration
+- **AgenticGoKit** — streaming-first API, broader LLM provider support, developer CLI tooling
 
 ---
 
 ## Running Tests
 
 ```bash
-# All 156 tests
+# All 156 tests (no API key or network access needed)
 go test ./...
 
-# Verbose output
+# Verbose
 go test -v ./...
 
-# Run a specific test
+# Race detector — expect: zero DATA RACE reports
+go test -race ./...
+
+# Specific test
 go test -run TestAgentWithRAG -v ./...
 ```
 
-The tests cover: agents, managers, tools, MCP, memory, tracing, HITL, sessions, guardrails, eval, and RAG — all without any API keys or network access.
+The test suite covers: agents, managers, tools, MCP, memory, tracing, HITL, sessions, guardrails, eval, RAG, tool cache, and conversations — all offline.
 
 ---
 
