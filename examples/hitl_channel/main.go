@@ -1,6 +1,18 @@
-// Human-in-the-loop using ChannelHITLHandler: the approval path is a request channel
-// (outbound to your UI) and a response channel (inbound from the human). This matches
-// WebSocket or desktop apps better than stdin prompts.
+// What this example does
+//
+// Demonstrates Human-in-the-Loop (HITL) gating of tool calls using ChannelHITLHandler,
+// which is what you wire to a WebSocket, desktop UI, or ticket queue (not stdin).
+//
+// Where HITL appears in the execution flow
+//
+//  1. AgentConfig.HITL installs a HITLController with your Handler and Policy.
+//  2. The mock LLM returns a tool call for delete_file (simulating the model deciding to delete).
+//  3. Before Execute runs, the runtime checks HITLPolicyDangerous + DangerousTools — delete_file matches.
+//  4. RequestApproval calls your Handler: ChannelHITLHandler sends the request on reqCh and blocks until respCh.
+//  5. The goroutine below plays “the human/UI”: it prints the pending tool and args, then sends HITLApprove.
+//  6. Only after approval does the tool Execute run; then the LLM is called again for the final message.
+//
+// If you rejected (HITLReject) or aborted (HITLAbort), the tool would not run (or the run would stop).
 //
 // Run: go run .
 package main
@@ -20,11 +32,12 @@ func main() {
 
 	handler, respCh, reqCh := herdai.ChannelHITLHandler()
 
-	// Simulate a UI layer: receive pending tool calls and send decisions.
-	// In production this bridges to your front-end instead of stdout.
+	// --- HITL “human / UI” side: approve or deny what the agent wants to run. ---
 	go func() {
+		// Block 1: agent hit a dangerous tool → request arrives here (would be your WebSocket write).
 		req := <-reqCh
-		fmt.Printf("[HITL] approve tool %q (agent=%s) args=%v\n", req.ToolName, req.AgentID, req.Args)
+		fmt.Printf("[HITL] pending approval: tool=%q agent=%s args=%v\n", req.ToolName, req.AgentID, req.Args)
+		fmt.Println("[HITL] decision: APPROVE (tool will now execute)")
 		respCh <- herdai.HITLResponse{
 			Decision:    herdai.HITLApprove,
 			RespondedAt: time.Now(),
@@ -55,6 +68,7 @@ func main() {
 				},
 			},
 		},
+		// HITL: only dangerous tools listed here pause for the handler above.
 		HITL: &herdai.HITLConfig{
 			Policy:         herdai.HITLPolicyDangerous,
 			DangerousTools: []string{"delete_file"},

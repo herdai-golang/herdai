@@ -1,7 +1,12 @@
-// Concurrency benchmark sample for HerdAI: parallel agents (Manager) and parallel
-// tool execution (Agent). Use this to compare wall-clock behavior against Python
-// stacks (CrewAI, AutoGen, LangGraph) where multi-agent or multi-tool work is
-// often serialized or process-bound.
+// What this example does
+//
+// Benchmark (not a tutorial): measures wall time for (1) a parallel vs sequential
+// Manager over N agents with simulated LLM delay, and (2) parallel vs sequential
+// tool execution inside one Agent. Use it to see that HerdAI can overlap work; compare
+// to Python stacks where work is often serialized.
+//
+// Run: go run .
+// Run: go run . -quiet
 package main
 
 import (
@@ -171,13 +176,13 @@ func benchAgentTools(log *slog.Logger, n int, delay time.Duration) (parallel, se
 	mockPar := herdai.NewMockLLM(mockResponses...)
 	parallelOn := true
 	agentPar := herdai.NewAgent(herdai.AgentConfig{
-		ID:                  "researcher",
-		Role:                "Researcher",
-		Goal:                "Gather sources",
-		Tools:               tools,
-		LLM:                 mockPar,
-		ParallelToolCalls:   &parallelOn,
-		Logger:              log,
+		ID:                "researcher",
+		Role:              "Researcher",
+		Goal:              "Gather sources",
+		Tools:             tools,
+		LLM:               mockPar,
+		ParallelToolCalls: &parallelOn,
+		Logger:            log,
 	})
 	t0 := time.Now()
 	_, err := agentPar.Run(ctx, "Gather data", nil)
@@ -190,13 +195,13 @@ func benchAgentTools(log *slog.Logger, n int, delay time.Duration) (parallel, se
 	mockSeq := herdai.NewMockLLM(mockResponses...)
 	parallelOff := false
 	agentSeq := herdai.NewAgent(herdai.AgentConfig{
-		ID:                  "researcher-seq",
-		Role:                "Researcher",
-		Goal:                "Gather sources",
-		Tools:               tools,
-		LLM:                 mockSeq,
-		ParallelToolCalls:   &parallelOff,
-		Logger:              log,
+		ID:                "researcher-seq",
+		Role:              "Researcher",
+		Goal:              "Gather sources",
+		Tools:             tools,
+		LLM:               mockSeq,
+		ParallelToolCalls: &parallelOff,
+		Logger:            log,
 	})
 	t1 := time.Now()
 	_, err = agentSeq.Run(ctx, "Gather data", nil)

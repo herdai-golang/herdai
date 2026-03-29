@@ -1,12 +1,11 @@
-// Minimal HerdAI program: one agent, one LLM response, no tools.
+// What this example does
 //
-// Run from this directory:
+// Smallest possible HerdAI program: create one Agent with a MockLLM, call Run once with
+// no tools and no conversation history. Shows the basic Run → Result flow only.
 //
-//	go run .
+// Run: go run .
 //
-// Or after publishing:
-//
-//	go get github.com/herdai-golang/herdai@latest
+// After publishing: go get github.com/herdai-golang/herdai@latest
 package main
 
 import (

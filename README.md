@@ -51,7 +51,7 @@ All examples work **without an API key** — they use `MockLLM`. Clone the repo 
 | [`examples/supervisor_three_agents`](examples/supervisor_three_agents) | **Supervisor pattern**: `StrategyLLMRouter` picks among three specialists |
 | [`examples/concurrent_questions`](examples/concurrent_questions) | 8 goroutines each using their own agent simultaneously — race-safe pattern |
 | [`examples/hitl_channel`](examples/hitl_channel) | **Human-in-the-loop** via `ChannelHITLHandler` — simulates a UI/WebSocket approval flow |
-| [`examples/rag_simple`](examples/rag_simple) | Keyword RAG with `SimpleRAG` and an in-memory vector store |
+| [`examples/rag_simple`](examples/rag_simple) | RAG on a public PDF (download + text extract + chunks + keyword retrieval); `go run . --demo` offline |
 | [`examples/concurrency_benchmark`](examples/concurrency_benchmark) | Parallel vs sequential benchmark; see also [`benchmark/`](benchmark/) for the full suite |
 
 ```bash
@@ -60,7 +60,8 @@ cd examples/single_agent_tools     && go run .
 cd examples/supervisor_three_agents && go run .
 cd examples/concurrent_questions   && go run .
 cd examples/hitl_channel           && go run .
-cd examples/rag_simple             && go run .
+cd examples/rag_simple             && go run . --demo
+# Full PDF (~18 MB download): cd examples/rag_simple && go run .
 ```
 
 ---

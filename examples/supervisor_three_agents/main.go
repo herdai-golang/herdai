@@ -1,8 +1,9 @@
-// Three specialist agents coordinated by an LLM "supervisor" (StrategyLLMRouter).
-// The supervisor LLM decides which agent runs next; when done, it returns agent_id FINISH.
+// What this example does
 //
-// In production you use a real LLM for the router (same ManagerConfig.LLM). Here we use
-// a MockLLM with fixed JSON decisions so the example runs with no API key.
+// Multi-agent routing: a Manager uses StrategyLLMRouter so an LLM “supervisor” picks
+// which specialist agent runs next (researcher, writer, qa). When finished, the router
+// returns FINISH. Production uses a real LLM on ManagerConfig.LLM; this demo uses a
+// MockLLM with fixed routing JSON so it runs without an API key.
 //
 // Run: go run .
 package main
@@ -53,11 +54,11 @@ func main() {
 	)
 
 	mgr := herdai.NewManager(herdai.ManagerConfig{
-		ID:         "team",
-		Strategy:   herdai.StrategyLLMRouter,
-		Agents:     []herdai.Runnable{researcher, writer, qa},
-		LLM:        supervisor,
-		MaxTurns:   10,
+		ID:       "team",
+		Strategy: herdai.StrategyLLMRouter,
+		Agents:   []herdai.Runnable{researcher, writer, qa},
+		LLM:      supervisor,
+		MaxTurns: 10,
 	})
 
 	result, err := mgr.Run(context.Background(), "Prepare a pitch for HerdAI on a team slide.", nil)

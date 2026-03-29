@@ -1,5 +1,8 @@
-// One agent with multiple tools. The mock LLM first requests two tools in one turn
-// (parallel tool calls), then returns a final answer that uses those results.
+// What this example does
+//
+// One agent registers two tools (add, to_upper). The mock LLM first returns two tool
+// calls in a single LLM turn (they may run in parallel), then a second LLM response
+// with the final natural-language answer. Use this to see the tool loop end-to-end.
 //
 // Run: go run .
 package main

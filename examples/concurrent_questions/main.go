@@ -1,10 +1,11 @@
-// Concurrent questions: many goroutines ask the same agent *configuration* at once.
+// What this example does
 //
-// Race safety: each goroutine uses its own Agent and MockLLM. A single Agent with a
-// shared MockLLM would interleave queued mock responses and break runs. Each goroutine
-// also uses its own Conversation so transcripts stay isolated.
+// Spawns several goroutines; each runs agent.Run with a different question at the same
+// time. Shows a safe pattern for concurrent HTTP handlers or workers: give each request
+// its own Agent and MockLLM (stateful mock queue), and its own Conversation, so runs
+// do not corrupt each other.
 //
-// Verify with: go test -race .
+// Verify concurrency safety: go test -race .
 //
 // Run: go run .
 package main
